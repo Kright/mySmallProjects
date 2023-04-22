@@ -1,9 +1,11 @@
+from typing import List
+
 import torch
 import torch.nn as nn
 
 from .downsampler import DownSampler
 from .features_vgg import FeaturesFromVGG16
-import random
+from .random_crop import RandomShiftCrop
 
 
 class DiscriminatorVggMse(nn.Module):
@@ -12,7 +14,7 @@ class DiscriminatorVggMse(nn.Module):
 
         self.mse_loss = torch.nn.MSELoss("mean")
         self.inpad_size: int = inpad_size
-        self.random_shift: int = random_shift
+        self.random_shift_crop = RandomShiftCrop(random_shift)
         self.downsampler = DownSampler(prescale) if prescale != 1 else None
         self.vgg = FeaturesFromVGG16(15)
         self.weight: float = weight
@@ -27,15 +29,10 @@ class DiscriminatorVggMse(nn.Module):
 
     def loss(self, y: torch.Tensor, label: torch.Tensor) -> torch.Tensor:
         if self.weight == 0.0:
-            return torch.zeros(size=[1]).to(y.get_device())
+            return torch.zeros(size=[1], device=y.get_device())
 
+        y, label = self.random_shift_crop(y, label)
         initial_size = y.size()[2]
-
-        rx = random.randrange(0, self.random_shift)
-        ry = random.randrange(0, self.random_shift)
-
-        y = y[:, :, ry: initial_size - self.random_shift + ry, rx: initial_size - self.random_shift + rx]
-        label = label[:, :, ry: initial_size - self.random_shift + ry, rx: initial_size - self.random_shift + rx]
 
         if self.downsampler is not None:
             y = torch.clip(y, 0.000001, 1.0)
@@ -47,8 +44,8 @@ class DiscriminatorVggMse(nn.Module):
         y_features = self.vgg(y)
         label_features = self.vgg(label)
 
-        result = 0
+        results: List[torch.Tensor] = []
         for y_f, label_f in zip(y_features, label_features):
-            result += self.mse_loss(self.crop(y_f, initial_size), self.crop(label_f, initial_size))
+            results.append(self.mse_loss(self.crop(y_f, initial_size), self.crop(label_f, initial_size)))
 
-        return result * self.weight
+        return sum(results) * self.weight

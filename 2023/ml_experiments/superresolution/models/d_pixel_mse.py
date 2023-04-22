@@ -9,7 +9,7 @@ class DiscriminatorPixelMse:
 
     def loss(self, y: torch.Tensor, label: torch.Tensor) -> torch.Tensor:
         if self.weight == 0.0:
-            return torch.zeros(size=[1]).to(y.get_device())
+            return torch.zeros(size=[1], device=y.get_device())
 
         if self.inpad_size != 0:
             s = self.inpad_size
