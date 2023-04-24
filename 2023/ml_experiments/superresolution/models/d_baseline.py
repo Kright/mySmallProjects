@@ -13,7 +13,8 @@ class DiscriminatorBaselineNetwork(nn.Module):
                  inpad_size: int,
                  *,
                  use_batch_norm: bool = True,
-                 dropout: Optional[float] = None):
+                 dropout: Optional[float] = None,
+                 deep: bool = False):
         super(DiscriminatorBaselineNetwork, self).__init__()
 
         self.in_pad = inpad_size
@@ -22,17 +23,33 @@ class DiscriminatorBaselineNetwork(nn.Module):
         self.dropout = dropout
         self.random_crop = RandomShiftCrop(4)
 
-        self.layers = nn.Sequential(
-            self.conv(3, mid_channels, kernel_size=5),
-            self.conv(mid_channels, mid_channels, kernel_size=3),
-            nn.MaxPool2d(2),
-            self.conv(mid_channels, mid_channels * 2, kernel_size=3),
-            self.conv(mid_channels * 2, mid_channels * 2, kernel_size=3),
-            nn.MaxPool2d(2),
-            self.conv(mid_channels * 2, mid_channels * 4, kernel_size=3),
-            self.conv(mid_channels * 4, mid_channels * 8, kernel_size=1),
-            nn.Conv2d(mid_channels * 8, 1, kernel_size=1)
-        )
+        if not deep:
+            self.layers = nn.Sequential(
+                self.conv(3, mid_channels, kernel_size=5),
+                self.conv(mid_channels, mid_channels, kernel_size=3),
+                nn.MaxPool2d(2),
+                self.conv(mid_channels, mid_channels * 2, kernel_size=3),
+                self.conv(mid_channels * 2, mid_channels * 2, kernel_size=3),
+                nn.MaxPool2d(2),
+                self.conv(mid_channels * 2, mid_channels * 4, kernel_size=3),
+                self.conv(mid_channels * 4, mid_channels * 8, kernel_size=1),
+                nn.Conv2d(mid_channels * 8, 1, kernel_size=1)
+            )
+        else:
+            self.layers = nn.Sequential(
+                self.conv(3, mid_channels, kernel_size=5),
+                self.conv(mid_channels, mid_channels, kernel_size=3),
+                self.conv(mid_channels, mid_channels, kernel_size=3),
+                nn.MaxPool2d(2),
+                self.conv(mid_channels, mid_channels * 2, kernel_size=3),
+                self.conv(mid_channels * 2, mid_channels * 2, kernel_size=3),
+                self.conv(mid_channels * 2, mid_channels * 2, kernel_size=3),
+                nn.MaxPool2d(2),
+                self.conv(mid_channels * 2, mid_channels * 4, kernel_size=3),
+                self.conv(mid_channels * 4, mid_channels * 4, kernel_size=3),
+                self.conv(mid_channels * 4, mid_channels * 8, kernel_size=1),
+                nn.Conv2d(mid_channels * 8, 1, kernel_size=1)
+            )
 
         self.binary_crossentropy_with_sigmoid = torch.nn.BCEWithLogitsLoss()
 
