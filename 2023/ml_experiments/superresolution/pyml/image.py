@@ -28,7 +28,7 @@ def get_extension(path: str) -> str:
 
 
 def is_image(path: str) -> bool:
-    return get_extension(path) in {'.jpeg', '.jpg', '.png', '.tif', '.tiff', '.webm', '.webp'}
+    return get_extension(path) in {'.jpeg', '.jpg', '.png', '.tif', '.tiff', '.webp'}
 
 
 def image_get_model(image: PILImage) -> str:
