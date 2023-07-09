@@ -1,5 +1,7 @@
 # all code is from https://github.com/mlomnitz/DiffJPEG under MIT License
 
+from typing import List, Optional
+import random
 # Pytorch
 import torch
 import torch.nn as nn
@@ -33,3 +35,20 @@ class DiffJPEG(nn.Module):
         y, cb, cr = self.compress(x)
         recovered = self.decompress(y, cb, cr)
         return recovered
+
+
+class RandomJPEG(nn.Module):
+    def __init__(self, size: int, qualities: List[int], seed: int = 12):
+        super(RandomJPEG, self).__init__()
+        self.jpegers = nn.ParameterList(
+            [DiffJPEG(height=size, width=size, differentiable=False, quality=q) for q in qualities])
+        self.dummy = nn.Parameter(torch.zeros(size=[1]))
+        self.random = random.Random(seed)
+
+    def __call__(self, x: torch.Tensor, jpeger_no: Optional[int] = None):
+        if jpeger_no is None:
+            jpeger = self.random.choice(self.jpegers)
+        else:
+            jpeger = self.jpegers[jpeger_no]
+
+        return jpeger(x.to(self.dummy.device)).to(x.device)
