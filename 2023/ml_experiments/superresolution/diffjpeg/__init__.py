@@ -45,7 +45,10 @@ class RandomJPEG(nn.Module):
         self.dummy = nn.Parameter(torch.zeros(size=[1]))
         self.random = random.Random(seed)
 
-    def __call__(self, x: torch.Tensor, jpeger_no: Optional[int] = None):
+    def __call__(self, x: torch.Tensor, jpeger_no: Optional[int] = None, each_random: bool = False):
+        if each_random and x.dim() == 4 and x.size(0) > 1:
+            return torch.cat([self(x[i: i + 1]) for i in range(x.size(0))], dim=0)
+
         if jpeger_no is None:
             jpeger = self.random.choice(self.jpegers)
         else:
