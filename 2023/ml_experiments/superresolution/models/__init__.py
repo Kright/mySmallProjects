@@ -7,3 +7,4 @@ from .features_vgg import FeaturesFromVGG16
 from .d_vgg_mse import DiscriminatorVggMse
 from .d_baseline import DiscriminatorBaselineNetwork
 from .pixel_norm_2d import PixelNorm2d
+from .residual import Residual

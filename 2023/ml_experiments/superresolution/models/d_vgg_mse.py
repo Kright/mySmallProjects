@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import torch
 import torch.nn as nn
@@ -21,15 +21,15 @@ class DiscriminatorVggMse(nn.Module):
         self.requires_grad_(False)
 
     def crop(self, y: torch.Tensor, initial_size: int) -> torch.Tensor:
-        y_size = y.size()[2]
+        y_size = y.size(2)
         inpad_size = self.inpad_size * y_size // initial_size
         if inpad_size == 0:
             return y
         return y[:, :, inpad_size:-inpad_size, inpad_size:-inpad_size]
 
-    def loss(self, y: torch.Tensor, label: torch.Tensor) -> torch.Tensor:
+    def layer_losses(self, y: torch.Tensor, label) -> Optional[List[torch.Tensor]]:
         if self.weight == 0.0:
-            return torch.zeros(size=[1], device=y.get_device())
+            return None
 
         y, label = self.random_shift_crop(y, label)
         initial_size = y.size()[2]
@@ -47,5 +47,11 @@ class DiscriminatorVggMse(nn.Module):
         results: List[torch.Tensor] = []
         for y_f, label_f in zip(y_features, label_features):
             results.append(self.mse_loss(self.crop(y_f, initial_size), self.crop(label_f, initial_size)))
+        return results
 
-        return sum(results) * self.weight
+    def loss(self, y: torch.Tensor, label: torch.Tensor) -> torch.Tensor:
+        if self.weight == 0.0:
+            return torch.zeros(size=[1], device=y.get_device())
+
+        losses = self.layer_losses(y, label)
+        return sum(losses) * self.weight
