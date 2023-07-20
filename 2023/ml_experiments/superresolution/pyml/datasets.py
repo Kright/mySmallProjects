@@ -14,13 +14,14 @@ class Dataset:
         )
         self.cuda_loader = self.make_cuda_loader(batch_size)
 
-    def make_cuda_loader(self, batch_size: int) -> DataLoader:
+    def make_cuda_loader(self, batch_size: int, num_workers: int = 0) -> DataLoader:
         return DataLoader(
             self.images_dataset,
             batch_size=batch_size,
             shuffle=True,
             pin_memory=True,
-            pin_memory_device='cuda'
+            pin_memory_device='cuda',
+            num_workers=num_workers
         )
 
 
