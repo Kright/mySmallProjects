@@ -15,6 +15,12 @@ class DataPtr:
     def set(self, value: int):
         self.data[self.pos] = value
 
+    def __getitem__(self, offset: int):
+        i = self.pos + offset
+        if self.allow_read_overflow and (i < 0 or i >= len(self.data)):
+            return 0
+        return self.data[i]
+
     def advance(self, shift: int = 1):
         self.pos += shift
 
