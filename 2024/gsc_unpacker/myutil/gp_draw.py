@@ -306,6 +306,11 @@ class GpGlobalHeader:
                         screen.fill(Palette.TRANSPARENT)
                         gp_show_masked_multi_pal_t_pict_make_mask(-dx, -dy, h, 0x00, screen)
                         screen.as_pic(palette).save(f"{directory}/{pic_name}")
+                    elif h.opt == 63:
+                        print(f"unknown type {h.opt}")
+                        screen.fill(Palette.TRANSPARENT)
+                        gp_show_masked_multi_pal_t_pict_make_mask(-dx, -dy, h, 0x00, screen)
+                        screen.as_pic(palette).save(f"{directory}/{pic_name}")
                     else:
                         raise ValueError(f"Unknown type: {h.opt}")
 
