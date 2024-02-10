@@ -42,3 +42,7 @@ class DataPtr:
     def push_many(self, values: List[int]):
         for v in values:
             self.push_one(v)
+
+    @staticmethod
+    def valid_zeros() -> 'DataPtr':
+        return DataPtr([], 0, allow_read_overflow=True)

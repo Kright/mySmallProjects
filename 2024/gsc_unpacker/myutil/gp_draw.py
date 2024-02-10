@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, Any, Optional
+from typing import List, Tuple, Dict, Any, Optional, Callable
 
 import json
 import numpy as np
@@ -22,7 +22,7 @@ def std_unpack(src: bytes, length: int, voc: bytes) -> bytes:
     while True:
         ah = next(src_iter)
 
-        for _ in reversed(range(8)):
+        for _ in range(8):
             if (ah & 128) != 0:
                 s_little = next(src_iter)
                 s_big = next(src_iter)
@@ -69,6 +69,32 @@ def gray_unpack(src: bytes, unpack_len: int) -> bytes:
         unpack_len -= 1
 
     return bytes(result)
+
+
+def lz_unpack(src: DataPtr, length: int) -> bytes:
+    result: List[int] = []
+
+    while True:
+        ah = src.consume_one()
+
+        for _ in range(8):
+            if (ah & 1) != 0:
+                cl, ch = src.consume_many(2)
+                ecx = cl | (ch << 8)
+                copy_count = (ecx >> 13) + 3
+                offset = len(result) - 1 - (ecx & 0x1FFF)
+                for _ in range(copy_count):
+                    result.append(result[offset])
+                    offset += 1
+                    length -= 1
+            else:
+                result.append(src.consume_one())
+                length -= 1
+
+            if length <= 0:
+                return bytes(result)
+
+            ah = ah >> 1
 
 
 @dataclass
@@ -168,6 +194,9 @@ class GpHeader(BaseModel):
         if self.opt == 38:
             return gray_unpack(self.packed_data, self.unpack_len)
 
+        if self.opt in (42, 43, 44):
+            return lz_unpack(DataPtr(self.packed_data), self.unpack_len)
+
         print(f'unsupported format: {self.opt}')
 
     def get_repr(self, field_names) -> str:
@@ -255,6 +284,18 @@ class GpGlobalHeader:
                         gp_show_masked_pal_pict(-dx, -dy, h, h.try_unpack_data(), NatPalette.get_ptr(nation), screen)
                         pic = screen.as_pic(palette)
                         pic.save(f"{directory}/{pic_name}")
+                    elif h.opt == 5:
+                        # just draw shadow mask, but game remaps colors instead
+                        screen.fill(Palette.TRANSPARENT)
+                        gp_show_masked_pict_shadow_make_mask(-dx, -dy, h, 0x00, screen)
+                        pic = screen.as_pic(palette)
+                        pic.save(f"{directory}/{pic_name}")
+                    elif h.opt in (42, 43, 44):
+                        screen.fill(Palette.TRANSPARENT)
+                        gp_show_masked_pict(-dx, -dy, h, h.try_unpack_data(), screen)
+                        pic = screen.as_pic(palette)
+                        pic.save(f"{directory}/{pic_name}")
+
 
                 # except Exception as e:
                 #     print(e)
@@ -331,7 +372,7 @@ class GpGlobalHeader:
         return result
 
 
-def gp_show_masked_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Screen):
+def gp_show_common(x: int, y: int, pic: GpHeader, cdata: Optional[bytes], screen: Screen, map_colors: Callable[[int, int], int]):
     x += pic.dx
     y += pic.dy
 
@@ -344,7 +385,12 @@ def gp_show_masked_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Scr
     assert x + pic.lx - 1 <= screen.x1, f'Should be {x + pic.lx - 1} <= {screen.x1}'
     assert y + n_lines - 1 <= screen.y1, f'Should be {y + n_lines - 1} <= {screen.y1}'
 
-    cdpos = DataPtr(cdata, 0, allow_read_overflow=False)
+    if cdata is not None:
+        cdpos = DataPtr(cdata, 0, allow_read_overflow=False)
+    else:
+        cdpos = DataPtr.valid_zeros()
+
+
     scr_offset: DataPtr = DataPtr(screen.data, x + y * screen.width)
 
     line_start: DataPtr = scr_offset.copy()
@@ -374,8 +420,10 @@ def gp_show_masked_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Scr
                 cl = (al >> 4) | pix_mask
                 al = (al & 0xF) | space_mask
                 edi.advance(al)
-                line = cdpos.consume_many(cl)
-                edi.push_many(line)
+
+                for i in range(cl):
+                    edi.push_one(map_colors(edi.get(), cdpos.consume_one()))
+
             continue
 
         # START_SIMPLE_SEGMENT
@@ -383,130 +431,27 @@ def gp_show_masked_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Scr
             al = ofst.consume_one()
             edi.advance(al)
             cl = ofst.consume_one()
-            line = cdpos.consume_many(cl)
-            edi.push_many(line)
+
+            for i in range(cl):
+                edi.push_one(map_colors(edi.get(), cdpos.consume_one()))
+
+
+def gp_show_masked_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Screen):
+    gp_show_common(x, y, pic, cdata, screen, lambda old_color, pixel: pixel)
 
 
 def gp_show_masked_multi_pal_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Screen, encoder: DataPtr):
-    x += pic.dx
-    y += pic.dy
-
-    n_lines = pic.n_lines
-    ofst = DataPtr(pic.offset_data, 0)
-
-    # no clipping case
-    assert x >= screen.x, f'Should be {x} >= {screen.x}'
-    assert y >= screen.y, f'Should be {y} >= {screen.y}'
-    assert x + pic.lx - 1 <= screen.x1, f'Should be {x + pic.lx - 1} <= {screen.x1}'
-    assert y + n_lines - 1 <= screen.y1, f'Should be {y + n_lines - 1} <= {screen.y1}'
-
-    cdpos = DataPtr(cdata, 0, allow_read_overflow=False)
-    scr_offset: DataPtr = DataPtr(screen.data, x + y * screen.width)
-
-    line_start: DataPtr = scr_offset.copy()
-    line_start.advance(-screen.width)
-
-    for line in range(n_lines):
-        al = ofst.consume_one()
-        line_start.advance(screen.width)
-        edi = line_start.copy()
-
-        if al == 0: continue
-
-        if (al & 128) != 0:
-            # DRAW_COMPLEX_LINE
-
-            space_mask = 0
-            pix_mask = 0
-            if (al & 64) != 0: space_mask = 16
-            if (al & 32) != 0: pix_mask = 16
-
-            al = al & 31
-            if al == 0:
-                continue
-
-            for _ in range(al):
-                al = ofst.consume_one()
-                cl = (al >> 4) | pix_mask
-                al = (al & 0xF) | space_mask
-
-                for _ in range(cl):
-                    old_color = scr_offset.get()
-                    offset = cdpos.consume_one() << 8
-                    new_color = encoder[old_color + offset]
-                    scr_offset.push_one(new_color)
-
-            continue
-
-        # START_SIMPLE_SEGMENT
-        for _ in range(al):
-            al = ofst.consume_one()
-            edi.advance(al)
-            cl = ofst.consume_one()
-
-            for _ in range(cl):
-                old_color = scr_offset.get()
-                offset = cdpos.consume_one() << 8
-                new_color = encoder[old_color + offset]
-                scr_offset.push_one(new_color)
+    gp_show_common(x, y, pic, cdata, screen, lambda old_color, pixel: encoder[old_color + (pixel << 8)])
 
 
-def gp_show_masked_pal_pict(x: int, y: int, pic: GpHeader, cdata: bytes, palette: DataPtr, screen: Screen):
-    x += pic.dx
-    y += pic.dy
+def gp_show_masked_pal_pict(x: int, y: int, pic: GpHeader, cdata: bytes, encoder: DataPtr, screen: Screen):
+    gp_show_common(x, y, pic, cdata, screen, lambda old_pixel, pixel: encoder[pixel])
 
-    n_lines = pic.n_lines
-    ofst = DataPtr(pic.offset_data, 0)
 
-    # no clipping case
-    assert x >= screen.x, f'Should be {x} >= {screen.x}'
-    assert y >= screen.y, f'Should be {y} >= {screen.y}'
-    assert x + pic.lx - 1 <= screen.x1, f'Should be {x + pic.lx - 1} <= {screen.x1}'
-    assert y + n_lines - 1 <= screen.y1, f'Should be {y + n_lines - 1} <= {screen.y1}'
+def gp_show_masked_pict_shadow(x: int, y: int, pic: GpHeader, encoder: DataPtr, screen: Screen):
+    gp_show_common(x, y, pic, None, screen, lambda old_pixel, pixel: encoder[old_pixel])
 
-    cdpos = DataPtr(cdata, 0, allow_read_overflow=False)
-    scr_offset: DataPtr = DataPtr(screen.data, x + y * screen.width)
 
-    line_start: DataPtr = scr_offset.copy()
-    line_start.advance(-screen.width)
+def gp_show_masked_pict_shadow_make_mask(x: int, y: int, pic: GpHeader, mask_color: int, screen: Screen):
+    gp_show_common(x, y, pic, None, screen, lambda old_pixel, pixel: mask_color)
 
-    for line in range(n_lines):
-        al = ofst.consume_one()
-        line_start.advance(screen.width)
-        edi = line_start.copy()
-
-        if al == 0: continue
-
-        if (al & 128) != 0:
-            # DRAW_COMPLEX_LINE
-
-            space_mask = 0
-            pix_mask = 0
-            if (al & 64) != 0: space_mask = 16
-            if (al & 32) != 0: pix_mask = 16
-
-            al = al & 31
-            if al == 0:
-                continue
-
-            for _ in range(al):
-                al = ofst.consume_one()
-                cl = (al >> 4) | pix_mask
-                al = (al & 0xF) | space_mask
-                edi.advance(al)
-
-                for _ in range(cl):
-                    eax = cdpos.consume_one()
-                    edi.push_one(palette[eax])
-
-            continue
-
-        # START_SIMPLE_SEGMENT
-        for _ in range(al):
-            al = ofst.consume_one()
-            edi.advance(al)
-            cl = ofst.consume_one()
-
-            for _ in range(cl):
-                eax = cdpos.consume_one()
-                edi.push_one(palette[eax])
