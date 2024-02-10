@@ -295,6 +295,8 @@ class GpGlobalHeader:
                         gp_show_masked_pict(-dx, -dy, h, h.try_unpack_data(), screen)
                         pic = screen.as_pic(palette)
                         pic.save(f"{directory}/{pic_name}")
+                    # else:
+                    #     raise ValueError(f"Unknown type: {h.opt}")
 
 
                 # except Exception as e:
@@ -372,7 +374,7 @@ class GpGlobalHeader:
         return result
 
 
-def gp_show_common(x: int, y: int, pic: GpHeader, cdata: Optional[bytes], screen: Screen, map_colors: Callable[[int, int], int]):
+def gp_show_common(x: int, y: int, pic: GpHeader, screen: Screen, map_colors: Callable[[DataPtr], int]):
     x += pic.dx
     y += pic.dy
 
@@ -384,11 +386,6 @@ def gp_show_common(x: int, y: int, pic: GpHeader, cdata: Optional[bytes], screen
     assert y >= screen.y, f'Should be {y} >= {screen.y}'
     assert x + pic.lx - 1 <= screen.x1, f'Should be {x + pic.lx - 1} <= {screen.x1}'
     assert y + n_lines - 1 <= screen.y1, f'Should be {y + n_lines - 1} <= {screen.y1}'
-
-    if cdata is not None:
-        cdpos = DataPtr(cdata, 0, allow_read_overflow=False)
-    else:
-        cdpos = DataPtr.valid_zeros()
 
 
     scr_offset: DataPtr = DataPtr(screen.data, x + y * screen.width)
@@ -422,7 +419,7 @@ def gp_show_common(x: int, y: int, pic: GpHeader, cdata: Optional[bytes], screen
                 edi.advance(al)
 
                 for i in range(cl):
-                    edi.push_one(map_colors(edi.get(), cdpos.consume_one()))
+                    edi.push_one(map_colors(edi))
 
             continue
 
@@ -433,25 +430,28 @@ def gp_show_common(x: int, y: int, pic: GpHeader, cdata: Optional[bytes], screen
             cl = ofst.consume_one()
 
             for i in range(cl):
-                edi.push_one(map_colors(edi.get(), cdpos.consume_one()))
+                edi.push_one(map_colors(edi))
 
 
 def gp_show_masked_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Screen):
-    gp_show_common(x, y, pic, cdata, screen, lambda old_color, pixel: pixel)
+    cdata = DataPtr(cdata)
+    gp_show_common(x, y, pic, screen, lambda dst: cdata.consume_one())
 
 
 def gp_show_masked_multi_pal_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Screen, encoder: DataPtr):
-    gp_show_common(x, y, pic, cdata, screen, lambda old_color, pixel: encoder[old_color + (pixel << 8)])
+    cdata = DataPtr(cdata)
+    gp_show_common(x, y, pic, cdata, screen, lambda dst: encoder[dst.get() + (cdata.consume_one() << 8)])
 
 
 def gp_show_masked_pal_pict(x: int, y: int, pic: GpHeader, cdata: bytes, encoder: DataPtr, screen: Screen):
-    gp_show_common(x, y, pic, cdata, screen, lambda old_pixel, pixel: encoder[pixel])
+    cdata = DataPtr(cdata)
+    gp_show_common(x, y, pic, screen, lambda dst: encoder[cdata.consume_one()])
 
 
 def gp_show_masked_pict_shadow(x: int, y: int, pic: GpHeader, encoder: DataPtr, screen: Screen):
-    gp_show_common(x, y, pic, None, screen, lambda old_pixel, pixel: encoder[old_pixel])
+    gp_show_common(x, y, pic, screen, lambda dst, pixel: encoder[dst.get()])
 
 
 def gp_show_masked_pict_shadow_make_mask(x: int, y: int, pic: GpHeader, mask_color: int, screen: Screen):
-    gp_show_common(x, y, pic, None, screen, lambda old_pixel, pixel: mask_color)
+    gp_show_common(x, y, pic, screen, lambda dst: mask_color)
 
