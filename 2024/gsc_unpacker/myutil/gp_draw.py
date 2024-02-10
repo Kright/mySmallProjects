@@ -288,15 +288,26 @@ class GpGlobalHeader:
                         # just draw shadow mask, but game remaps colors instead
                         screen.fill(Palette.TRANSPARENT)
                         gp_show_masked_pict_shadow_make_mask(-dx, -dy, h, 0x00, screen)
-                        pic = screen.as_pic(palette)
-                        pic.save(f"{directory}/{pic_name}")
+                        screen.as_pic(palette).save(f"{directory}/{pic_name}")
                     elif h.opt in (42, 43, 44):
                         screen.fill(Palette.TRANSPARENT)
                         gp_show_masked_pict(-dx, -dy, h, h.try_unpack_data(), screen)
-                        pic = screen.as_pic(palette)
-                        pic.save(f"{directory}/{pic_name}")
-                    # else:
-                    #     raise ValueError(f"Unknown type: {h.opt}")
+                        screen.as_pic(palette).save(f"{directory}/{pic_name}")
+                    elif h.opt in (2, 3):
+                        # just draw mask
+                        screen.fill(Palette.TRANSPARENT)
+                        gp_show_masked_multi_pal_t_pict_make_mask(-dx, -dy, h, 0x00, screen)
+                        screen.as_pic(palette).save(f"{directory}/{pic_name}")
+                    elif h.opt == 4:
+                        screen.fill(Palette.TRANSPARENT)
+                        gp_show_masked_multi_pal_t_pict_make_mask(-dx, -dy, h, 0x00, screen)
+                        screen.as_pic(palette).save(f"{directory}/{pic_name}")
+                    elif h.opt in (38, 39):
+                        screen.fill(Palette.TRANSPARENT)
+                        gp_show_masked_multi_pal_t_pict_make_mask(-dx, -dy, h, 0x00, screen)
+                        screen.as_pic(palette).save(f"{directory}/{pic_name}")
+                    else:
+                        raise ValueError(f"Unknown type: {h.opt}")
 
 
                 # except Exception as e:
@@ -455,3 +466,11 @@ def gp_show_masked_pict_shadow(x: int, y: int, pic: GpHeader, encoder: DataPtr, 
 def gp_show_masked_pict_shadow_make_mask(x: int, y: int, pic: GpHeader, mask_color: int, screen: Screen):
     gp_show_common(x, y, pic, screen, lambda dst: mask_color)
 
+
+def gp_show_masked_multi_pal_t_pict(x: int, y: int, pic: GpHeader, cdata: bytes, screen: Screen, encoder: DataPtr):
+    cdata = DataPtr(cdata)
+    gp_show_common(x, y, pic, screen, lambda dst: encoder[dst.get() << 8 + cdata.consume_one])
+
+
+def gp_show_masked_multi_pal_t_pict_make_mask(x: int, y: int, pic: GpHeader, mask_color: int, screen: Screen):
+    gp_show_common(x, y, pic, screen, lambda dst: mask_color)
