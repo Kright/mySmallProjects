@@ -4,20 +4,36 @@ package com.github.kright.ga
 def main(): Unit = {
   println("hello world")
 
-  Basis.ga2.use {
+  Basis.ga3.use{
+    println("geometric")
+    println(basis.geometric.toPrettyString(basis.bladesByOrder))
+    println("wedge")
+    println(basis.wedge.toPrettyString(basis.bladesByOrder))
+    println("dot")
+    println(basis.dot.toPrettyString(basis.bladesByOrder))
+  }
+
+  Basis.ga3.use {
     val a = MultiVector(basis.blades.zip((1 to basis.bladesCount).map(_.toDouble)).filter(_._1.order == 1))
     val b = MultiVector(basis.blades.zip((basis.bladesCount + 1 to basis.bladesCount * 2).map(_.toDouble)).filter(_._1.order == 1))
+    val c = MultiVector(basis.blades.zip((basis.bladesCount * 2 + 1 to basis.bladesCount * 3).map(_.toDouble)).filter(_._1.order == 1))
 
     println(s"a = ${a}, mag = ${a.magnitude}")
     println(s"b = ${b}, mag = ${b.magnitude}")
-    println(s"a geometric b = ${a.geometric(b)}, mag = ${a.geometric(b).magnitude} xz ${a.magnitude * b.magnitude} ")
-    println(s"a dot b = ${a.dot(b)}")
-    println(s"a wedge b = ${a.wedge(b)}")
 
-    println(s"a ⟑ a = ${a ⟑ a}")
-    println(s"a ⟑ a* = ${a ⟑ a.map((b, v) => if (b.order % 2 == 0) v else -v)}")
-    println(s"a ⟑ a* = ${a ⟑ a.map((b, v) => if (b.order == 0) v else -v)}")
-    println()
+    println(basis.geometric.toPrettyString(basis.bladesByOrder))
+
+    println("geometric")
+    println(a ⟑ b)
+    println(b ⟑ a)
+
+    println("wedge")
+    println(a ∧ b)
+    println(b ∧ a)
+
+    println("dot")
+    println(a ⋅ (b ⟑ c))
+    println((b ⟑ c) ⋅ a)
   }
 }
 

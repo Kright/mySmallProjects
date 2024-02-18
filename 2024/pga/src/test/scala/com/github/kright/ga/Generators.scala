@@ -21,13 +21,13 @@ object Generators:
       basisBladesGen.map(MultiVector(_)(using basis))
 
     def multivectorsGen: Gen[MultiVector[Double]] =
-      Gen.containerOfN[Seq, Double](basis.bladesCount, Gen.double).map { values =>
-        require(values.length == basis.bladesCount)
-        MultiVector(basis.blades.zip(values))(using basis)
-      }
+      for {
+        order <- Gen.choose(1, basis.vectorsCount)
+        components <- Gen.containerOfN[Seq, MultiVector[Double]](basis.bladesCount, bladesGen(1))
+      } yield components.reduce(_ ⟑ _)
 
     def bladesGen(order: Int): Gen[MultiVector[Double]] =
       Gen.containerOfN[Seq, Double](basis.bladesCount, Gen.double).map { values =>
         require(values.length == basis.bladesCount)
         MultiVector(basis.blades.zip(values).filter((b, v) => b.order == order))(using basis)
-      }  
+      }

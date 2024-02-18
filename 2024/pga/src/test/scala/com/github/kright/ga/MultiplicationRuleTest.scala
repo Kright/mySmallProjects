@@ -39,21 +39,6 @@ class MultiplicationRuleTest extends AnyFunSuite {
     }
   }
 
-  test("dot wedge") {
-    Basis.pga3.use {
-      val a =
-        MultiVector[Double](Map(
-          BasisBlade("x") -> 1.0,
-          BasisBlade("y") -> 10.0,
-        ))
-
-      val b = MultiVector[Double](Map(
-        BasisBlade("y") -> 2.0,
-        BasisBlade("xz") -> 100.0,
-      ))
-    }
-  }
-
   test("associativity") {
     for (basis <- allBasisesSeq) {
       basis.use {

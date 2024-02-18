@@ -11,6 +11,9 @@ case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis
   def map[V2](f: (BasisBlade, Value) => V2): MultiVector[V2] =
     MultiVector[V2](values.map((b, v) => b -> f(b, v)))
 
+  def filter(f: (BasisBlade, Value) => Boolean): MultiVector[Value] =
+    MultiVector[Value](values.filter(f(_, _)))
+
   def updated(setValues: IterableOnce[(BasisBlade, Value)]): MultiVector[Value] =
     MultiVector[Value](values ++ setValues)
 
@@ -24,6 +27,9 @@ object MultiVector:
 
   def apply[T](values: IterableOnce[(BasisBlade, T)])(using basis: Basis): MultiVector[T] =
     new MultiVector[T](values.iterator.toMap)
+
+  def scalar[T](value: T)(using basis: Basis): MultiVector[Double] =
+    new MultiVector[Double](Map(basis.scalarBlade -> 1.0))
 
   def randomDoubles(using basis: Basis): MultiVector[Double] =
     apply(basis.blades.map(b => b -> math.random()))
@@ -52,6 +58,20 @@ object MultiVector:
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)
     def ∧(right: MultiVector[T]): MultiVector[T] = wedge(right)
     def ⋅(right: MultiVector[T]): MultiVector[T] = dot(right)
+
+    def +(right: MultiVector[T]): MultiVector[T] =
+      MultiVector[T]((left.values.keySet ++ right.values.keySet).toSeq.map { b =>
+        b -> (left(b) + right(b))
+      })(using left.basis)
+
+    def -(right: MultiVector[T]): MultiVector[T] =
+      MultiVector[T]((left.values.keySet ++ right.values.keySet).toSeq.map { b =>
+        b -> (left(b) - right(b))
+      })(using left.basis)
+
+    def unary_- : MultiVector[T] =
+      left.map((b, v) => -v)
+
     def apply(right: MultiVector[T]): MultiVector[T] = geometric(right)
 
     def getSqrDist(right: MultiVector[T]): T =

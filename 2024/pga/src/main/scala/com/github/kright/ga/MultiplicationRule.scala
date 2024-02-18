@@ -2,18 +2,14 @@ package com.github.kright.ga
 
 class MultiplicationRule(using basis: Basis) extends HasBasis(basis):
   def dot(left: BasisBlade, right: BasisBlade): BasisBladeWithSign =
-    if (left.hasCommonBasisVectors(right) || left == right) {
-      geometric(left, right)
-    } else {
-      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
-    }
+    val a = geometric(left, right)
+    val b = geometric(right, left)
+    if (a == b) a else BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
 
   def wedge(left: BasisBlade, right: BasisBlade): BasisBladeWithSign =
-    if (left.hasCommonBasisVectors(right) || left == right) {
-      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
-    } else {
-      geometric(left, right)
-    }
+    val a = geometric(left, right)
+    val b = geometric(right, left)
+    if (a == b) BasisBladeWithSign(basis.scalarBlade, Sign.Zero) else a
 
   def geometric(a: BasisBlade, b: BasisBlade): BasisBladeWithSign =
     checkBasis(a, b)
