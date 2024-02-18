@@ -51,8 +51,6 @@ class MultiplicationRuleTest extends AnyFunSuite {
         BasisBlade("y") -> 2.0,
         BasisBlade("xz") -> 100.0,
       ))
-
-      println(rulePga3.wedge(a, b))
     }
   }
 

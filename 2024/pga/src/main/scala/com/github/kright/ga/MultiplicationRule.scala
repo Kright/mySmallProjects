@@ -1,7 +1,5 @@
 package com.github.kright.ga
 
-import scala.collection.mutable
-
 class MultiplicationRule(using basis: Basis) extends HasBasis(basis):
   def dot(left: BasisBlade, right: BasisBlade): BasisBladeWithSign =
     if (left.hasCommonBasisVectors(right) || left == right) {
@@ -29,30 +27,6 @@ class MultiplicationRule(using basis: Basis) extends HasBasis(basis):
 
     if (sign == Sign.Zero) return BasisBladeWithSign(basis.scalarBlade, sign)
     BasisBladeWithSign(BasisBlade(a.bits ^ b.bits), sign)
-
-  def wedge[V: MyAlgebra](left: MultiVector[V], right: MultiVector[V]): MultiVector[V] = {
-    checkBasis(left, right)
-
-    val result = new mutable.HashMap[BasisBlade, V]()
-
-    for ((leftBlade, leftV) <- left.values) {
-      for ((rightBlade, rightV) <- right.values) {
-        val m = wedge(leftBlade, rightBlade)
-        if (m.sign != Sign.Zero) {
-          var mult: V = leftV * rightV
-          if (m.sign == Sign.Negative) {
-            mult = -mult
-          }
-          
-          result(m.basisBlade) =
-            if (result.contains(m.basisBlade)) result(m.basisBlade) + mult
-            else mult
-        }
-      }
-    }
-
-    MultiVector(result.toMap)
-  }
 
   private def checkBasis(left: HasBasis, right: HasBasis): Unit = {
     require(left.basis == basis)
