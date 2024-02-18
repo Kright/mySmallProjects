@@ -3,31 +3,30 @@ package com.github.kright.ga
 import scala.language.implicitConversions
 import scala.util.chaining.*
 
-class MultiplicationTable(private val basis: Basis):
-  private val data = new Array[(BasisBlade, Sign)](1 << (basis.vectorsCount * 2))
+class MultiplicationTable(private val basis: Basis) extends Multiplication:
+  private val data = new Array[BasisBladeWithSign](1 << (basis.vectorsCount * 2))
 
   private def getPos(left: BasisBlade, right: BasisBlade): Int =
     (left.bits << basis.vectorsCount) + right.bits
 
-  private def update(left: BasisBlade, right: BasisBlade, value: (BasisBlade, Sign)): Unit = {
+  private def update(left: BasisBlade, right: BasisBlade, value: BasisBladeWithSign): Unit = {
     data(getPos(left, right)) = value
   }
 
-  def apply(left: BasisBlade, right: BasisBlade): (BasisBlade, Sign) =
+  override def apply(left: BasisBlade, right: BasisBlade): BasisBladeWithSign =
     data(getPos(left, right))
 
-  private def toPrettyString(basisBlade: BasisBlade, sign: Sign): String =
-    sign match
-      case Sign.Positive => basisBlade.toString
-      case Sign.Negative => s"-$basisBlade"
+  private def toPrettyString(v: BasisBladeWithSign): String =
+    v.sign match
+      case Sign.Positive => v.basisBlade.toString
+      case Sign.Negative => s"-${v.basisBlade}"
       case Sign.Zero => "0"
 
   def toPrettyString(bladesOrder: IndexedSeq[BasisBlade]): String =
     val strings: IndexedSeq[IndexedSeq[String]] =
       bladesOrder.map { left =>
         bladesOrder.map { right =>
-          val (m, sign) = this (left, right)
-          toPrettyString(m, sign)
+          toPrettyString(this(left, right))
         }
       }
 
@@ -37,7 +36,7 @@ class MultiplicationTable(private val basis: Basis):
 
 
 object MultiplicationTable:
-  def apply(op: (BasisBlade, BasisBlade) => (BasisBlade, Sign))(using basis: Basis): MultiplicationTable =
+  def apply(op: (BasisBlade, BasisBlade) => BasisBladeWithSign)(using basis: Basis): MultiplicationTable =
     new MultiplicationTable(basis).tap { table =>
       for (left <- basis.blades; right <- basis.blades) {
         table(left, right) = op(left, right)

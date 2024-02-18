@@ -4,26 +4,20 @@ package com.github.kright.ga
 def main(): Unit = {
   println("hello world")
 
-  Basis.ga2.use{
-    printMultiplicationTables()
-  }
+  Basis.ga2.use {
+    val a = MultiVector(basis.blades.zip((1 to basis.bladesCount).map(_.toDouble)).filter(_._1.order == 1))
+    val b = MultiVector(basis.blades.zip((basis.bladesCount + 1 to basis.bladesCount * 2).map(_.toDouble)).filter(_._1.order == 1))
 
-  Basis.ga3.use {
-    printMultiplicationTables()
-  }
+    println(s"a = ${a}, mag = ${a.magnitude}")
+    println(s"b = ${b}, mag = ${b.magnitude}")
+    println(s"a geometric b = ${a.geometric(b)}, mag = ${a.geometric(b).magnitude} xz ${a.magnitude * b.magnitude} ")
+    println(s"a dot b = ${a.dot(b)}")
+    println(s"a wedge b = ${a.wedge(b)}")
 
-  Basis.pga2.use {
-    val x = BasisBlade("x")
-    val y = BasisBlade("y")
-
-//    println(x)
-//    println(y)
-
-    printMultiplicationTables()
-  }
-
-  Basis.pga3.use {
-    printMultiplicationTables()
+    println(s"a ⟑ a = ${a ⟑ a}")
+    println(s"a ⟑ a* = ${a ⟑ a.map((b, v) => if (b.order % 2 == 0) v else -v)}")
+    println(s"a ⟑ a* = ${a ⟑ a.map((b, v) => if (b.order == 0) v else -v)}")
+    println()
   }
 }
 

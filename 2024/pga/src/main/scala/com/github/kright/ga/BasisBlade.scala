@@ -25,6 +25,7 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
     if (bits == (1 << basis.vectorsCount) - 1) return "I"
     s"${basisVectors.map(v => basis.basisNames.names(v.number)).mkString("")}"
 
+
 object BasisBlade:
   /**
    * Unaware of order, so "xy" and "yx" will produce BasisBlade("xy") without sign checking

@@ -11,10 +11,15 @@ case class Basis(pos: Int,
 
   val bladesCount: Int = 1 << vectorsCount
   val blades: IndexedSeq[BasisBlade] = (0 until bladesCount).map(b => BasisBlade(b))
-  def scalarBlade: BasisBlade = blades(0)
-  val bladesByOrder: IndexedSeq[BasisBlade] = blades.sortBy(_.order)
 
+  def scalarBlade: BasisBlade = blades(0)
+
+  val bladesByOrder: IndexedSeq[BasisBlade] = blades.sortBy(_.order)
   require(basisNames.size == vectorsCount)
+
+  val geometric: MultiplicationTable = MultiplicationTable.geometric
+  val wedge: MultiplicationTable = MultiplicationTable.wedge
+  val dot: MultiplicationTable = MultiplicationTable.dot
 
   override def equals(obj: Any): Boolean =
     if (this eq obj.asInstanceOf[Object]) return true
@@ -26,14 +31,18 @@ case class Basis(pos: Int,
   override def hashCode(): Int =
     scala.util.hashing.byteswap32((pos << 16) + (neg << 8) + zeros)
 
-  def use[T](f: Basis ?=> T): T = 
+  def use[T](f: Basis ?=> T): T =
     given basis: Basis = this
+
     f
 
+
+def basis(using b: Basis): Basis = b
 
 object Basis:
   val ga2: Basis = Basis(2, 0, 0, BasisNames("xy"))
   val ga3: Basis = Basis(3, 0, 0, BasisNames("xyz"))
+  val ga4: Basis = Basis(4, 0, 0, BasisNames("xyzw"))
 
   // projective geometric algebra
   val pga2: Basis = Basis(2, 0, 1, BasisNames("xyw"))
