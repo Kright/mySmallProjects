@@ -11,5 +11,5 @@ libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "3.2.18",
   "org.scalatest" %% "scalatest" % "3.2.18" % "test",
   "org.scalatestplus" %% "scalacheck-1-17" % "3.2.18.0" % "test",
-  "org.scalacheck" %% "scalacheck" % "1.14.1" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
 )
