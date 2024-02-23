@@ -51,7 +51,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   }
 
   test("wedge product distributivity for multivectors") {
-    checkAssociativityForBasisBlades { b => (l, r) => l.wedge(r) }
+    checkDistributivityForMultivectors { b => (l, r) => l.wedge(r) }
   }
 
 
