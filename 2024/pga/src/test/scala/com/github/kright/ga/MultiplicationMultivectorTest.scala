@@ -42,12 +42,21 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     }
   }
 
-  test("geometric product associativity for multivectors") {
-    checkAssociativityForMultivectors { b => (l, r) => l.geometric(r) }
-  }
-
   test("geometric product distributivity for multivectors") {
     checkDistributivityForMultivectors { b => (l, r) => l.geometric(r) }
+  }
+
+  test("dot product distributivity for multivectors") {
+    checkDistributivityForMultivectors { b => (l, r) => l.dot(r) }
+  }
+
+  test("wedge product distributivity for multivectors") {
+    checkAssociativityForBasisBlades { b => (l, r) => l.wedge(r) }
+  }
+
+
+  test("geometric product associativity for multivectors") {
+    checkAssociativityForMultivectors { b => (l, r) => l.geometric(r) }
   }
 
   test("dot product associativity for blades") {
@@ -57,6 +66,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   test("wedge product associativity for blades") {
     checkAssociativityForBasisBlades { b => (l, r) => l.wedge(r) }
   }
+
 
   test("wedge product with two same vectors is zero") {
     for (basis <- allBasisesSeq) {
