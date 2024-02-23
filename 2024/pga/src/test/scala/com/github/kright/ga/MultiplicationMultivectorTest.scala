@@ -7,13 +7,27 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks.forAll
 
 class MultiplicationMultivectorTest extends AnyFunSuite:
+  implicit val vectorEquality: Equality[MultiVector[Double]] = GaEquality.makeEquality(1e-9)
+
   def checkAssociativityForBasisBlades(makeOp: Basis => (MultiVector[Double], MultiVector[Double]) => MultiVector[Double]): Unit = {
     for (basis <- allBasisesSeq) {
       val op = makeOp(basis)
 
-      forAll(basis.basisMultivectorsGen, basis.basisMultivectorsGen, basis.basisMultivectorsGen) { (a, b, c) =>
+      forAll(basis.bladesGen(1), basis.bladesGen(1), basis.bladesGen(1)) { (a, b, c) =>
         val left = op(op(a, b), c)
         val right = op(a, op(b, c))
+        assert(left === right)
+      }
+    }
+  }
+
+  def checkDistributivityForMultivectors(makeOp: Basis => (MultiVector[Double], MultiVector[Double]) => MultiVector[Double]): Unit = {
+    for (basis <- allBasisesSeq) {
+      val op = makeOp(basis)
+
+      forAll(basis.multivectorsGen, basis.multivectorsGen, basis.multivectorsGen) { (a, b, c) =>
+        assert(op(a + b, c) === op(a, c) + op(b, c))
+        assert(op(c, a + b) === op(c, a) + op(c, b))
       }
     }
   }
@@ -23,19 +37,17 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
       val op = makeOp(basis)
 
       forAll(basis.multivectorsGen, basis.multivectorsGen, basis.multivectorsGen) { (a, b, c) =>
-        val left = op(op(a, b), c)
-        val right = op(a, op(b, c))
-        assert(left.getSqrDist(right) < 1e-5, s"wrong dist ${left.getSqrDist(right)}, ${left}, ${right}")
+        assert(op(op(a, b), c) === op(a, op(b, c)))
       }
     }
   }
 
-  test("geometric product associativity for blades") {
-    checkAssociativityForBasisBlades { b => (l, r) => l.geometric(r) }
-  }
-
   test("geometric product associativity for multivectors") {
     checkAssociativityForMultivectors { b => (l, r) => l.geometric(r) }
+  }
+
+  test("geometric product distributivity for multivectors") {
+    checkDistributivityForMultivectors { b => (l, r) => l.geometric(r) }
   }
 
   test("dot product associativity for blades") {
@@ -44,6 +56,17 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
 
   test("wedge product associativity for blades") {
     checkAssociativityForBasisBlades { b => (l, r) => l.wedge(r) }
+  }
+
+  test("wedge product with two same vectors is zero") {
+    for (basis <- allBasisesSeq) {
+      val zero = MultiVector.zero[Double](using basis)
+      forAll(basis.bladesGen(1), basis.multivectorsGen) { (a, m) =>
+        assert((a ∧ a) === zero)
+        assert((a ∧ (m ∧ a)) === zero)
+        assert(((a ∧ m) ∧ a) === zero)
+      }
+    }
   }
 
   test("geometric product preserves 1-blade length") {
@@ -74,11 +97,8 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   test("wedge product is antisymmetric") {
     for (basis <- allBasisesSeq) {
       basis.use {
-        forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
-          val ab = a ∧ b
-          val ba = b ∧ a
-          val dist = ab.getSqrDist(-ba)
-          assert(dist < 1e-9, s"\nab = ${ab}\nba = ${ba}")
+        forAll(basis.bladesGen(1), basis.bladesGen(1)) { (a, b) =>
+          assert(a ∧ b === -(b ∧ a))
         }
       }
     }
@@ -87,11 +107,8 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   test("dot product is symmetric") {
     for (basis <- allBasisesSeq) {
       basis.use {
-        forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
-          val ab = a ⋅ b
-          val ba = b ⋅ a
-          val dist = ab.getSqrDist(ba)
-          assert(dist < 1e-9, s"\nab = ${ab}\nba = ${ba},\na= ${a},\nb = ${b}")
+        forAll(basis.bladesGen(1), basis.bladesGen(1)) { (a, b) =>
+          assert(a ⋅ b === b ⋅ a)
         }
       }
     }
@@ -105,8 +122,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
           val d = a ⋅ b
           val g = a ⟑ b
 
-          val dist = g.getSqrDist(w + d)
-          assert(dist < 1e-9,
+          assert(g === w + d,
             s"""g = ${g}
                |w = ${w}
                |d = ${d}

@@ -30,6 +30,9 @@ object MultiVector:
 
   def scalar[T](value: T)(using basis: Basis): MultiVector[Double] =
     new MultiVector[Double](Map(basis.scalarBlade -> 1.0))
+    
+  def zero[T](using basis: Basis): MultiVector[T] =
+    new MultiVector[T](Map.empty[BasisBlade, T])
 
   def randomDoubles(using basis: Basis): MultiVector[Double] =
     apply(basis.blades.map(b => b -> math.random()))
@@ -71,6 +74,9 @@ object MultiVector:
 
     def unary_- : MultiVector[T] =
       left.map((b, v) => -v)
+
+    def *(scalarMultiplier: T): MultiVector[T] =
+      left.map((b, t) => t * scalarMultiplier)
 
     def apply(right: MultiVector[T]): MultiVector[T] = geometric(right)
 

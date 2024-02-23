@@ -2,38 +2,27 @@ package com.github.kright.ga
 
 @main
 def main(): Unit = {
-  println("hello world")
 
-  Basis.ga3.use{
-    println("geometric")
-    println(basis.geometric.toPrettyString(basis.bladesByOrder))
-    println("wedge")
-    println(basis.wedge.toPrettyString(basis.bladesByOrder))
-    println("dot")
-    println(basis.dot.toPrettyString(basis.bladesByOrder))
-  }
+  Basis.pga2.use {
+    def point(x: Double, y: Double): MultiVector[Double] =
+      MultiVector(Seq(
+        BasisBlade.apply("x") -> x,
+        BasisBlade.apply("y") -> y,
+        BasisBlade.apply("w") -> 1.0,
+      ))
 
-  Basis.ga3.use {
-    val a = MultiVector(basis.blades.zip((1 to basis.bladesCount).map(_.toDouble)).filter(_._1.order == 1))
-    val b = MultiVector(basis.blades.zip((basis.bladesCount + 1 to basis.bladesCount * 2).map(_.toDouble)).filter(_._1.order == 1))
-    val c = MultiVector(basis.blades.zip((basis.bladesCount * 2 + 1 to basis.bladesCount * 3).map(_.toDouble)).filter(_._1.order == 1))
+    def unitizePoint(v: MultiVector[Double]): MultiVector[Double] =
+      v * (1.0 / v.apply(BasisBlade("w") ))
 
-    println(s"a = ${a}, mag = ${a.magnitude}")
-    println(s"b = ${b}, mag = ${b.magnitude}")
+    val p1 = point(1, 0)
+    val p2 = point(0, 2)
+    val p3 = point(1, 1)
 
-    println(basis.geometric.toPrettyString(basis.bladesByOrder))
+    println(p1 ∧ p2 ∧ p2)
+    println(p1 ∧ (p2 ∧ p2))
+    println(p2 ∧ p1 ∧ p2)
 
-    println("geometric")
-    println(a ⟑ b)
-    println(b ⟑ a)
-
-    println("wedge")
-    println(a ∧ b)
-    println(b ∧ a)
-
-    println("dot")
-    println(a ⋅ (b ⟑ c))
-    println((b ⟑ c) ⋅ a)
+    printMultiplicationTables()
   }
 }
 
