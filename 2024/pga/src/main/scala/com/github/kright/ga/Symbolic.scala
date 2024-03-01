@@ -10,7 +10,11 @@ sealed trait Symbolic:
       case Symbolic.Constant(value) => this
       case Symbolic.Symbol(s) => this
       case Symbolic.Product(elems) => {
-        val (constants, otherElems) = elems.map(_.simplified).partition(_.isConstant)
+        val (constants, otherElems) = elems.map(_.simplified).flatMap {
+          case Symbolic.Product(elems) => elems
+          case a: Symbolic => Seq(a)
+        }.partition(_.isConstant)
+
         val multiplier = constants.map(_.asInstanceOf[Symbolic.Constant].value).product
         multiplier match
           case 0.0 => Symbolic.Constant(0.0)
@@ -18,7 +22,10 @@ sealed trait Symbolic:
           case v: Double => Symbolic.Product.optimized(Seq(Symbolic.Constant(v)) ++ otherElems)
       }
       case Symbolic.Sum(elems) => {
-        val (constants, otherElems) = elems.map(_.simplified).partition(_.isConstant)
+        val (constants, otherElems) = elems.map(_.simplified).flatMap {
+          case Symbolic.Sum(elems) => elems
+          case a: Symbolic => Seq(a)
+        }.partition(_.isConstant)
         val sum = constants.map(_.asInstanceOf[Symbolic.Constant].value).sum
         sum match
           case 0.0 => Symbolic.Sum.optimized(otherElems)
