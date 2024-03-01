@@ -21,8 +21,13 @@ case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis
     MultiVector[Value](values ++ setValues)
 
   override def toString: String =
-    s"MultiVector(${values.toSeq.sortWith((p1, p2) => (p1._1.order < p2._1.order) || (p1._1.bits < p2._1.bits)).map { (b, v) => s"$b -> ${v}" }.mkString(", ")})"
+    toString("(", ", ", ")")
 
+  def toString(start: String, separator: String, end: String): String =
+    s"MultiVector${values.toSeq.sortWith((p1, p2) => (p1._1.order < p2._1.order) || (p1._1.bits < p2._1.bits)).map { (b, v) => s"$b -> ${v}" }.mkString(start, separator, end)}"
+
+  def toMultilineString: String =
+    toString("(\n", "\n", "\n)")
 
 object MultiVector:
   def apply(b: BasisBlade)(using basis: Basis): MultiVector[Double] =
@@ -82,6 +87,7 @@ object MultiVector:
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)
     def ∧(right: MultiVector[T]): MultiVector[T] = wedge(right)
     def ⋅(right: MultiVector[T]): MultiVector[T] = dot(right)
+    def ⟇(right: MultiVector[T]): MultiVector[T] = geometricAntiproduct(right)
 
     def +(right: MultiVector[T]): MultiVector[T] =
       MultiVector[T]((left.values.keySet ++ right.values.keySet).toSeq.map { b =>
