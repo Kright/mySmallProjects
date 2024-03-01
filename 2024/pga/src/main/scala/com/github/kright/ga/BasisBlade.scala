@@ -20,6 +20,10 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
   def hasCommonBasisVectors(other: BasisBlade): Boolean =
     (bits & other.bits) != 0
 
+  /* doesnt account sign */
+  def anyComplement: BasisBlade =
+    BasisBlade(bits ^ basis.bitsMap)
+
   override def toString: String =
     if (bits == 0) return "1"
     if (bits == (1 << basis.vectorsCount) - 1) return "I"

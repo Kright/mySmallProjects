@@ -59,6 +59,10 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     checkAssociativityForMultivectors { b => (l, r) => l.geometric(r) }
   }
 
+  test("geometric antiproduct associativity for multivectors") {
+    checkAssociativityForMultivectors { b => (l, r) => l.geometricAntiproduct(r) }
+  }
+
   test("dot product associativity for blades") {
     checkAssociativityForBasisBlades { b => (l, r) => l.dot(r) }
   }
@@ -138,6 +142,16 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
                |d = ${d}
                |w + d = ${w + d}
                |""".stripMargin)
+        }
+      }
+    }
+  }
+
+  test("geometric antiproduct corresponds to geometric product") {
+    for (basis <- allBasisesSeq) {
+      basis.use {
+        forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
+          assert(a.geometric(b).rightComplement === a.rightComplement.geometricAntiproduct(b.rightComplement))
         }
       }
     }

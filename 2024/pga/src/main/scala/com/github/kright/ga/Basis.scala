@@ -11,15 +11,20 @@ case class Basis(pos: Int,
 
   val bladesCount: Int = 1 << vectorsCount
   val blades: IndexedSeq[BasisBlade] = (0 until bladesCount).map(b => BasisBlade(b))
+  val bitsMap: Int = (1 << vectorsCount) - 1
 
   def scalarBlade: BasisBlade = blades(0)
+  def antiScalarBlade: BasisBlade = bladesByOrder.last
 
   val bladesByOrder: IndexedSeq[BasisBlade] = blades.sortBy(_.order)
   require(basisNames.size == vectorsCount)
 
-  val geometric: MultiplicationTable = MultiplicationTable.geometric
-  val wedge: MultiplicationTable = MultiplicationTable.wedge
-  val dot: MultiplicationTable = MultiplicationTable.dot
+  val geometric: MultiplicationTable = MultiplicationTable.fromRule(_.geometric)
+  val wedge: MultiplicationTable = MultiplicationTable.fromRule(_.wedge)
+  val dot: MultiplicationTable = MultiplicationTable.fromRule(_.dot)
+  val geometricAntiproduct: MultiplicationTable = MultiplicationTable.fromRule(_.geometricAntiproduct)
+  val leftComplement: SingleOpTable = SingleOpTable.fromRule(_.leftComplement)
+  val rightComplement: SingleOpTable = SingleOpTable.fromRule(_.rightComplement)
 
   override def equals(obj: Any): Boolean =
     if (this eq obj.asInstanceOf[Object]) return true

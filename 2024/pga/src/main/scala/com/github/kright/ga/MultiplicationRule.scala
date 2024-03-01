@@ -28,6 +28,26 @@ class MultiplicationRule(using basis: Basis) extends HasBasis(basis):
     if (sign == Sign.Zero) return BasisBladeWithSign(basis.scalarBlade, sign)
     BasisBladeWithSign(BasisBlade(a.bits ^ b.bits), sign)
 
+  def geometric(a: BasisBladeWithSign, b: BasisBladeWithSign): BasisBladeWithSign =
+    geometric(a.basisBlade, b.basisBlade) * (a.sign * b.sign)
+
+  def rightComplement(a: BasisBlade): BasisBladeWithSign =
+    val complement = a.anyComplement
+    BasisBladeWithSign(complement, geometric(a, complement).sign)
+
+  def rightComplement(a: BasisBladeWithSign): BasisBladeWithSign =
+    rightComplement(a.basisBlade) * a.sign
+
+  def leftComplement(a: BasisBlade): BasisBladeWithSign =
+    val complement = a.anyComplement
+    BasisBladeWithSign(complement, geometric(complement, a).sign)
+
+  def leftComplement(a: BasisBladeWithSign): BasisBladeWithSign =
+    leftComplement(a.basisBlade) * a.sign
+
+  def geometricAntiproduct(a: BasisBlade, b: BasisBlade): BasisBladeWithSign =
+    leftComplement(geometric(rightComplement(a), rightComplement(b)))
+
   private def checkBasis(left: HasBasis, right: HasBasis): Unit = {
     require(left.basis == basis)
     require(right.basis == basis)

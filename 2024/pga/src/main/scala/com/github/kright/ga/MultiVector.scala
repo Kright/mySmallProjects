@@ -11,6 +11,9 @@ case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis
   def map[V2](f: (BasisBlade, Value) => V2): MultiVector[V2] =
     MultiVector[V2](values.map((b, v) => b -> f(b, v)))
 
+  def mapValues[V2](f: Value => V2): MultiVector[V2] =
+    MultiVector[V2](values.map((b, v) => b -> f(v)))
+
   def filter(f: (BasisBlade, Value) => Boolean): MultiVector[Value] =
     MultiVector[Value](values.filter(f(_, _)))
 
@@ -28,9 +31,12 @@ object MultiVector:
   def apply[T](values: IterableOnce[(BasisBlade, T)])(using basis: Basis): MultiVector[T] =
     new MultiVector[T](values.iterator.toMap)
 
+  def apply[T](values: (String, T)*)(using basis: Basis): MultiVector[T] =
+    apply[T](values.map((s, v) => BasisBlade(s) -> v).toMap)
+
   def scalar[T](value: T)(using basis: Basis): MultiVector[Double] =
     new MultiVector[Double](Map(basis.scalarBlade -> 1.0))
-    
+
   def zero[T](using basis: Basis): MultiVector[T] =
     new MultiVector[T](Map.empty[BasisBlade, T])
 
@@ -52,10 +58,25 @@ object MultiVector:
       }
       new MultiVector[T](result.toMap)(using left.basis)
 
+    def applySingleOp(singleOp: SingleOpTable): MultiVector[T] = {
+      val result = new mutable.HashMap[BasisBlade, T]()
+      for ((l, lv) <- left.values) {
+        val rr = singleOp(l)
+        rr.sign match
+          case Sign.Positive => result(rr.basisBlade) = result.getOrElse(rr.basisBlade, num.zero) + lv
+          case Sign.Negative => result(rr.basisBlade) = result.getOrElse(rr.basisBlade, num.zero) - lv
+          case Sign.Zero =>
+      }
+      new MultiVector[T](result.toMap)(using left.basis)
+    }
+
     def geometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometric)
     def wedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedge)
-
     def dot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dot)
+    def geometricAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometricAntiproduct)
+
+    def rightComplement: MultiVector[T] = applySingleOp(left.basis.rightComplement)
+    def leftComplement: MultiVector[T] = applySingleOp(left.basis.leftComplement)
 
     // unicode symbols: https://projectivegeometricalgebra.org/
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)
@@ -92,3 +113,6 @@ object MultiVector:
   extension (left: MultiVector[Double])
     def magnitude: Double =
       math.sqrt(left.squareMagnitude)
+
+    def /(scalarDivider: Double): MultiVector[Double] =
+      left * (1.0 / scalarDivider)

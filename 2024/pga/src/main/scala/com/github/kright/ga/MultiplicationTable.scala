@@ -43,14 +43,8 @@ object MultiplicationTable:
       }
     }
 
-  def geometric(using basis: Basis): MultiplicationTable =
+  def fromRule(op: MultiplicationRule => (BasisBlade, BasisBlade) => BasisBladeWithSign)(using basis: Basis): MultiplicationTable =
     val rule = MultiplicationRule()
-    apply(rule.geometric)
+    val func = op(rule)
+    apply(func)
 
-  def dot(using basis: Basis): MultiplicationTable =
-    val rule = MultiplicationRule()
-    apply(rule.dot)
-
-  def wedge(using basis: Basis): MultiplicationTable =
-    val rule = MultiplicationRule()
-    apply(rule.wedge)
