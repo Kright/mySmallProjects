@@ -13,11 +13,15 @@ import scala.util.{Failure, Success, Try}
 
 @main
 def main(): Unit =
-  val dir = new File("") // add here path to directory with files
+//  val pdfFile = new File("/home/lgor/projects/2023/files/2023/fin/pdfs/2023-09.PDF")
+//  val csvFile = new File(pdfFile.getParent, pdfFile.getName + ".csv")
+//  processFile(pdfFile, csvFile)
+
+  val dir = new File("/home/lgor/projects/2024/files/2024/fin/pdfs") // add here path to directory with files
   require(dir.exists())
 
   dir.listFiles().filter(_.getName.toLowerCase.endsWith(".pdf")).sorted.foreach{ pdfFile =>
-    val csvFile = new File(pdfFile.getParent, pdfFile.getName + ".csv")
+    val csvFile = new File(pdfFile.getParentFile.getParent, "csv/" + pdfFile.getName.reverse.drop(4).reverse + ".csv")
     println(s"convert $pdfFile => $csvFile")
     processFile(pdfFile, csvFile)
   }
