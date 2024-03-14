@@ -13,6 +13,14 @@ object Generators:
   def allBasises: Gen[Basis] =
     Gen.oneOf(allBasisesSeq)
 
+  def forAnyBasis(body: Basis ?=> Unit): Unit = {
+    for (basis <- allBasisesSeq) {
+      basis.use {
+        body
+      }
+    }
+  }  
+
   extension (basis: Basis)
     def basisBladesGen: Gen[BasisBlade] =
       Gen.oneOf(basis.blades)

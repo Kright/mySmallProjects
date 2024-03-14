@@ -1,11 +1,12 @@
 package com.github.kright.ga
 
+import com.github.kright.ga.Generators.forAnyBasis
 import org.scalatest.funsuite.AnyFunSuite
 
 class MultiplicationTableTest extends AnyFunSuite:
 
   test("dot is symmetric") {
-    for (basis <- Generators.allBasisesSeq) {
+    forAnyBasis {
       val dotTable = basis.dot
 
       for (left <- basis.blades.filter(_.order == 1);
@@ -22,7 +23,7 @@ class MultiplicationTableTest extends AnyFunSuite:
   }
 
   test("wedge is anti-symmetric") {
-    for (basis <- Generators.allBasisesSeq) {
+    forAnyBasis {
       val wedge = basis.wedge
 
       for (left <- basis.blades.filter(_.order == 1);
@@ -36,7 +37,7 @@ class MultiplicationTableTest extends AnyFunSuite:
   }
 
   test("geometric is a sum of dot and wedge") {
-    for (basis <- Generators.allBasisesSeq) {
+    forAnyBasis {
       for (left <- basis.blades;
            right <- basis.blades if left.bits <= right.bits) {
 
@@ -44,7 +45,7 @@ class MultiplicationTableTest extends AnyFunSuite:
         val b = basis.dot(left, right)
         val g = basis.geometric(left, right)
 
-        assert(g == w && b.sign == Sign.Zero || g == b && w.sign == Sign.Zero )
+        assert(g == w && b.sign == Sign.Zero || g == b && w.sign == Sign.Zero)
       }
     }
   }

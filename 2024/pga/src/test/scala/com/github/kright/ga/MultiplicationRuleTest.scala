@@ -1,21 +1,19 @@
 package com.github.kright.ga
 
-import com.github.kright.ga.Generators.allBasisesSeq
+import com.github.kright.ga.Generators.forAnyBasis
 import org.scalatest.funsuite.AnyFunSuite
 
-class MultiplicationRuleTest extends AnyFunSuite {
+class MultiplicationRuleTest extends AnyFunSuite:
   private val rulePga3 = Basis.pga3.use {
     MultiplicationRule()
   }
 
   test("dot for basis vectors") {
-    for (basis <- allBasisesSeq) {
-      basis.use {
-        val rule = MultiplicationRule()
-        for (v <- basis.vectors) {
-          val vb = BasisBlade(v)
-          assert(v.getSquareSign == rule.dot(vb, vb)._2)
-        }
+    forAnyBasis {
+      val rule = MultiplicationRule()
+      for (v <- basis.vectors) {
+        val vb = BasisBlade(v)
+        assert(v.getSquareSign == rule.dot(vb, vb)._2)
       }
     }
 
@@ -40,13 +38,11 @@ class MultiplicationRuleTest extends AnyFunSuite {
   }
 
   test("associativity") {
-    for (basis <- allBasisesSeq) {
-      basis.use {
-        val rule = MultiplicationRule()
-        for (v <- basis.vectors) {
-          val vb = BasisBlade(v)
-          assert(v.getSquareSign == rule.dot(vb, vb)._2)
-        }
+    forAnyBasis {
+      val rule = MultiplicationRule()
+      for (v <- basis.vectors) {
+        val vb = BasisBlade(v)
+        assert(v.getSquareSign == rule.dot(vb, vb)._2)
       }
     }
 
@@ -57,6 +53,5 @@ class MultiplicationRuleTest extends AnyFunSuite {
       assert(summon[Basis].vectors.map(BasisBlade(_)).map(b => rulePga3.dot(b, b)._2.toInt) == IndexedSeq(1, 1, 1, 0))
     }
   }
-  
+
   // todo test that ga3 match with pga3 on same basis blades
-}
