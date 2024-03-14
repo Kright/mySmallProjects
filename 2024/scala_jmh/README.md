@@ -2,6 +2,10 @@
 
 JMH library with examples: [https://github.com/sbt/sbt-jmh](https://github.com/sbt/sbt-jmh)
 
+How to run
+```shell
+sbt Jmh/run
+```
 
 Results (Maybe they are not actual, just for history):
 FibonacciBench.measureNative                               sample  491094     1932.335 ±   1.738  ns/op
@@ -26,3 +30,4 @@ final case class InstructionsSequence4(m0: MicroInterpreter,
 ```
 
 I'm not sure that results are correct, but they are definitely interesting.
+
