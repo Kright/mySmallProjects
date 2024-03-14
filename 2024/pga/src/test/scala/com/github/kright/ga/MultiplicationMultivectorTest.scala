@@ -156,3 +156,36 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
       }
     }
   }
+
+  test("pseudoScalar commutativity and anticommutativity") {
+    for (basis <- allBasisesSeq) {
+      basis.use {
+        val i = MultiVector(basis.antiScalarBlade)
+        forAll(basis.bladesGen(1)) { a =>
+          val isEven = basis.vectorsCount % 2 == 0
+          if (isEven) {
+            assert((a ⟑ i) === -(i ⟑ a))
+          } else {
+            assert((a ⟑ i) === (i ⟑ a))
+          }
+        }
+      }
+    }
+  }
+
+  test("exterior and interior product duality") {
+    for (basis <- allBasisesSeq) {
+      basis.use {
+        val i = MultiVector(basis.antiScalarBlade)
+
+        forAll(basis.bladesGen(1), basis.bladesGen(1)) { (a, b) =>
+          val isEven = basis.vectorsCount % 2 == 0
+          if (isEven) {
+            assert(a ∧ (i ⟑ b) === -(a ⋅ b) ⟑ i)
+          } else {
+            assert(a ∧ (i ⟑ b) === (a ⋅ b) ⟑ i)
+          }
+        }
+      }
+    }
+  }
