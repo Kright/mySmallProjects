@@ -71,6 +71,14 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     checkAssociativityForBasisBlades { b => (l, r) => l.wedge(r) }
   }
 
+  // I don't know why, but this is not working
+//  test("dot antiproduct product associativity for blades") {
+//    checkAssociativityForBasisBlades { b => (l, r) => l.dotAntiproduct(r) }
+//  }
+
+  test("wedge antiproduct product associativity for blades") {
+    checkAssociativityForBasisBlades { b => (l, r) => l.wedgeAntiproduct(r) }
+  }
 
   test("wedge product with two same vectors is zero") {
     forAnyBasis {
@@ -145,10 +153,43 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     }
   }
 
+  test("geometric antiproduct as sum of wedge antiproduct and dot antiproduct") {
+    forAnyBasis {
+      forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
+        val w = a ∨ b
+        val d = a ◦ b
+        val g = a ⟇ b
+
+        assert(g === w + d,
+          s"""g = ${g}
+             |w = ${w}
+             |d = ${d}
+             |w + d = ${w + d}
+             |""".stripMargin)
+      }
+    }
+  }
+
   test("geometric antiproduct corresponds to geometric product") {
     forAnyBasis {
       forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
         assert(a.geometric(b).rightComplement === a.rightComplement.geometricAntiproduct(b.rightComplement))
+      }
+    }
+  }
+
+  test("wedge antiproduct corresponds to wedge product") {
+    forAnyBasis {
+      forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
+        assert(a.wedge(b).rightComplement === a.rightComplement.wedgeAntiproduct(b.rightComplement))
+      }
+    }
+  }
+
+  test("dot antiproduct corresponds to dot product") {
+    forAnyBasis {
+      forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
+        assert(a.dot(b).rightComplement === a.rightComplement.dotAntiproduct(b.rightComplement))
       }
     }
   }

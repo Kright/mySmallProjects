@@ -4,27 +4,18 @@ type M = MultiVector[Double]
 
 @main
 def main(): Unit = {
-  Basis.pga2.use {
-    val center = MultiVector[Symbolic]("xy" -> Symbolic.Constant(1.0))
-    val dir = MultiVector[Symbolic](basis.bladesByOrder.map(b => b -> (if (b.bits == 0) Symbolic.Symbol("s") else Symbolic.Symbol(s"$b"))))
-
-    println(s"dir = ${dir}")
-    println(dir.wedge(center).wedge(dir))
-    println(dir.wedge(center).wedge(dir).mapValues(_.simplified))
-
+//  Basis.pga2.use {
+//    val center = MultiVector[Symbolic]("w" -> Symbolic.Constant(1.0))
+//    val dir = MultiVector[Symbolic](basis.bladesByOrder.filter(b => Set(0, 2, 3).contains(b.order)).map(b => b -> (if (b.bits == 0) Symbolic.Symbol("s") else Symbolic.Symbol(s"$b"))))
+//
+//    println(s"dir = ${dir}")
+//    println((dir ⟇ center ⟇ dir).mapValues(_.simplified).toMultilineString)
+//  }
+  Basis.pga3.use{
     printMultiplicationTables()
   }
 
-  Basis.ga3.use {
-    val center = MultiVector[Symbolic]("xy" -> Symbolic.Constant(1.0))
-    val dir = MultiVector[Symbolic](basis.bladesByOrder.map(b => b -> (if (b.bits == 0) Symbolic.Constant(1.0) else Symbolic.Symbol(s"$b"))))
-
-    println(dir.wedge(center).wedge(dir))
-    println(dir.wedge(center).wedge(dir).map((b, v) => v.simplified))
-
-    return
-  }
-
+  return
 
   Basis.pga2.use {
     def point(x: Double, y: Double): M =
@@ -51,17 +42,18 @@ def main(): Unit = {
     val y1 = point(0, 1)
     val center = point(0, 0)
 
-    println(p1 ∧ p2 ∧ p2)
-    println(p1 ∧ (p2 ∧ p2))
-    println(p2 ∧ p1 ∧ p2)
-
     for (blade <- basis.blades) {
       val d = MultiVector(Seq(BasisBlade("x") -> 1.0, blade -> 1.0))
       val p = MultiVector("w" -> 1.0)
 
       println(
         s"""d = ${d}
-           |d p d = ${(d ⟑ p ⟑ d).filter((b, v) => v != 0.0)}
+           |d ⟑ p ⟑ d = ${(d ⟑ p ⟑ d).filter((b, v) => v != 0.0)}
+           |""".stripMargin)
+
+      println(
+        s"""d = ${d}
+           |d ⟇ p ⟇ d = ${(d ⟇ p ⟇ d).filter((b, v) => v != 0.0)}
            |""".stripMargin)
     }
 
@@ -99,12 +91,20 @@ def main(): Unit = {
 
 
 def printMultiplicationTables()(using Basis): Unit = {
+  val maxLen = 5
+
   println("geometric")
-  println(MultiplicationTable.fromRule(_.geometric).toPrettyString(summon[Basis].bladesByOrder))
+  println(basis.geometric.toPrettyString(summon[Basis].bladesByOrder, maxLen))
   println("geometricAntiproduct")
-  println(MultiplicationTable.fromRule(_.geometricAntiproduct).toPrettyString(summon[Basis].bladesByOrder))
+  println(basis.geometricAntiproduct.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+
   println("dot")
-  println(MultiplicationTable.fromRule(_.dot).toPrettyString(summon[Basis].bladesByOrder))
+  println(basis.dot.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println("antidot")
+  println(basis.dotAntiproduct.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+
   println("wedge")
-  println(MultiplicationTable.fromRule(_.wedge).toPrettyString(summon[Basis].bladesByOrder))
+  println(basis.wedge.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println("antiwedge")
+  println(basis.wedgeAntiproduct.toPrettyString(summon[Basis].bladesByOrder, maxLen))
 }

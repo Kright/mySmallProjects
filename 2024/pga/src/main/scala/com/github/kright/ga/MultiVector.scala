@@ -78,7 +78,10 @@ object MultiVector:
     def geometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometric)
     def wedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedge)
     def dot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dot)
+
     def geometricAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometricAntiproduct)
+    def wedgeAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedgeAntiproduct)
+    def dotAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dotAntiproduct)
 
     def rightComplement: MultiVector[T] = applySingleOp(left.basis.rightComplement)
     def leftComplement: MultiVector[T] = applySingleOp(left.basis.leftComplement)
@@ -87,7 +90,10 @@ object MultiVector:
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)
     def ∧(right: MultiVector[T]): MultiVector[T] = wedge(right)
     def ⋅(right: MultiVector[T]): MultiVector[T] = dot(right)
+
     def ⟇(right: MultiVector[T]): MultiVector[T] = geometricAntiproduct(right)
+    def ∨(right: MultiVector[T]): MultiVector[T] = wedgeAntiproduct(right)
+    def ◦(right: MultiVector[T]): MultiVector[T] = dotAntiproduct(right)
 
     def +(right: MultiVector[T]): MultiVector[T] =
       MultiVector[T]((left.values.keySet ++ right.values.keySet).toSeq.map { b =>

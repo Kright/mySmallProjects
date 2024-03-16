@@ -1,20 +1,6 @@
 package com.github.kright.ga
 
 class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
-  val dot: Multiplication = (left: BasisBlade, right: BasisBlade) =>
-    if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
-      geometric(left, right)
-    } else {
-      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
-    }
-
-  val wedge: Multiplication = (left: BasisBlade, right: BasisBlade) =>
-    if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
-      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
-    } else {
-      geometric(left, right)
-    }
-
   val geometric: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     checkBasis(a, b)
 
@@ -28,6 +14,20 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
     if (sign == Sign.Zero) BasisBladeWithSign(basis.scalarBlade, sign)
     else BasisBladeWithSign(BasisBlade(a.bits ^ b.bits), sign)
 
+  val dot: Multiplication = (left: BasisBlade, right: BasisBlade) =>
+    if (left.hasCommonBasisVectors(right) || (left.bits == right.bits) ) {
+      geometric(left, right)
+    } else {
+      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
+    }
+
+  val wedge: Multiplication = (left: BasisBlade, right: BasisBlade) =>
+    if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
+      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
+    } else {
+      geometric(left, right)
+    }
+
   val rightComplement: SingleOp = (a: BasisBlade) =>
     val complement = a.anyComplement
     BasisBladeWithSign(complement, geometric(a, complement).sign)
@@ -38,6 +38,12 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
 
   val geometricAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     leftComplement(geometric(rightComplement(a), rightComplement(b)))
+
+  val wedgeAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
+    leftComplement(wedge(rightComplement(a), rightComplement(b)))
+
+  val dotAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
+    leftComplement(dot(rightComplement(a), rightComplement(b)))
 
   private def checkBasis(left: HasBasis, right: HasBasis): Unit = {
     require(left.basis == basis)
