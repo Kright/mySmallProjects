@@ -15,7 +15,7 @@ class BasisBladeTest extends AnyFunSuite:
 
   test("right and left complement") {
     forAnyBasis {
-      val rule = MultiplicationRule()
+      val rule = MultiplicationRules()
       for (blade <- basis.bladesByOrder) {
         val bladeWithSign = BasisBladeWithSign(blade)
         assert(basis.geometric(bladeWithSign, rule.rightComplement(blade)) == BasisBladeWithSign(basis.antiScalarBlade, Sign.Positive))

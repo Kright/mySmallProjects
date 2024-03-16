@@ -3,14 +3,14 @@ package com.github.kright.ga
 import com.github.kright.ga.Generators.forAnyBasis
 import org.scalatest.funsuite.AnyFunSuite
 
-class MultiplicationRuleTest extends AnyFunSuite:
+class MultiplicationRulesTest extends AnyFunSuite:
   private val rulePga3 = Basis.pga3.use {
-    MultiplicationRule()
+    MultiplicationRules()
   }
 
   test("dot for basis vectors") {
     forAnyBasis {
-      val rule = MultiplicationRule()
+      val rule = MultiplicationRules()
       for (v <- basis.vectors) {
         val vb = BasisBlade(v)
         assert(v.getSquareSign == rule.dot(vb, vb)._2)
@@ -39,7 +39,7 @@ class MultiplicationRuleTest extends AnyFunSuite:
 
   test("associativity") {
     forAnyBasis {
-      val rule = MultiplicationRule()
+      val rule = MultiplicationRules()
       for (v <- basis.vectors) {
         val vb = BasisBlade(v)
         assert(v.getSquareSign == rule.dot(vb, vb)._2)

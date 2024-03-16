@@ -26,7 +26,7 @@ class MultiplicationTable(private val basis: Basis) extends Multiplication:
     val strings: IndexedSeq[IndexedSeq[String]] =
       bladesOrder.map { left =>
         bladesOrder.map { right =>
-          toPrettyString(this(left, right))
+          toPrettyString(this (left, right))
         }
       }
 
@@ -36,15 +36,9 @@ class MultiplicationTable(private val basis: Basis) extends Multiplication:
 
 
 object MultiplicationTable:
-  def apply(op: (BasisBlade, BasisBlade) => BasisBladeWithSign)(using basis: Basis): MultiplicationTable =
+  def apply(op: Multiplication)(using basis: Basis): MultiplicationTable =
     new MultiplicationTable(basis).tap { table =>
       for (left <- basis.blades; right <- basis.blades) {
         table(left, right) = op(left, right)
       }
     }
-
-  def fromRule(op: MultiplicationRule => (BasisBlade, BasisBlade) => BasisBladeWithSign)(using basis: Basis): MultiplicationTable =
-    val rule = MultiplicationRule()
-    val func = op(rule)
-    apply(func)
-

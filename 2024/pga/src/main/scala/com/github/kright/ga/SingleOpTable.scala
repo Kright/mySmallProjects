@@ -18,14 +18,9 @@ class SingleOpTable(private val basis: Basis) extends SingleOp:
 
 
 object SingleOpTable:
-  def apply(op: (BasisBlade) => BasisBladeWithSign)(using basis: Basis): SingleOpTable =
+  def apply(op: SingleOp)(using basis: Basis): SingleOpTable =
     new SingleOpTable(basis).tap { table =>
       for (v <- basis.blades) {
         table(v) = op(v)
       }
     }
-
-  def fromRule(op: MultiplicationRule => BasisBlade => BasisBladeWithSign)(using basis: Basis): SingleOpTable =
-    val rule = MultiplicationRule()
-    val func = op(rule)
-    apply(func)

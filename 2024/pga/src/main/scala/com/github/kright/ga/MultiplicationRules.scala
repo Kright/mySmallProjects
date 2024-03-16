@@ -1,21 +1,21 @@
 package com.github.kright.ga
 
-class MultiplicationRule(using basis: Basis) extends HasBasis(basis):
-  def dot(left: BasisBlade, right: BasisBlade): BasisBladeWithSign =
+class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
+  val dot: Multiplication = (left: BasisBlade, right: BasisBlade) =>
     if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
       geometric(left, right)
     } else {
       BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
     }
 
-  def wedge(left: BasisBlade, right: BasisBlade): BasisBladeWithSign =
+  val wedge: Multiplication = (left: BasisBlade, right: BasisBlade) =>
     if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
       BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
     } else {
       geometric(left, right)
     }
 
-  def geometric(a: BasisBlade, b: BasisBlade): BasisBladeWithSign =
+  val geometric: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     checkBasis(a, b)
 
     val allBasisVectors = a.basisVectors ++ b.basisVectors
@@ -25,27 +25,18 @@ class MultiplicationRule(using basis: Basis) extends HasBasis(basis):
     val removedSigns = a.commonBasisVectors(b).map(_.getSquareSign)
     val sign = removedSigns.fold(paritySign)(_ * _)
 
-    if (sign == Sign.Zero) return BasisBladeWithSign(basis.scalarBlade, sign)
-    BasisBladeWithSign(BasisBlade(a.bits ^ b.bits), sign)
+    if (sign == Sign.Zero) BasisBladeWithSign(basis.scalarBlade, sign)
+    else BasisBladeWithSign(BasisBlade(a.bits ^ b.bits), sign)
 
-  def geometric(a: BasisBladeWithSign, b: BasisBladeWithSign): BasisBladeWithSign =
-    geometric(a.basisBlade, b.basisBlade) * (a.sign * b.sign)
-
-  def rightComplement(a: BasisBlade): BasisBladeWithSign =
+  val rightComplement: SingleOp = (a: BasisBlade) =>
     val complement = a.anyComplement
     BasisBladeWithSign(complement, geometric(a, complement).sign)
 
-  def rightComplement(a: BasisBladeWithSign): BasisBladeWithSign =
-    rightComplement(a.basisBlade) * a.sign
-
-  def leftComplement(a: BasisBlade): BasisBladeWithSign =
+  val leftComplement: SingleOp = (a: BasisBlade) =>
     val complement = a.anyComplement
     BasisBladeWithSign(complement, geometric(complement, a).sign)
 
-  def leftComplement(a: BasisBladeWithSign): BasisBladeWithSign =
-    leftComplement(a.basisBlade) * a.sign
-
-  def geometricAntiproduct(a: BasisBlade, b: BasisBlade): BasisBladeWithSign =
+  val geometricAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     leftComplement(geometric(rightComplement(a), rightComplement(b)))
 
   private def checkBasis(left: HasBasis, right: HasBasis): Unit = {
