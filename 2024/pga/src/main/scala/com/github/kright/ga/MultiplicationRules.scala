@@ -15,15 +15,15 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
     else BasisBladeWithSign(BasisBlade(a.bits ^ b.bits), sign)
 
   val dot: Multiplication = (left: BasisBlade, right: BasisBlade) =>
-    if (left.hasCommonBasisVectors(right) || (left.bits == right.bits) ) {
+    if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
       geometric(left, right)
     } else {
-      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
+      BasisBladeWithSign.zero
     }
 
   val wedge: Multiplication = (left: BasisBlade, right: BasisBlade) =>
     if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
-      BasisBladeWithSign(basis.scalarBlade, Sign.Zero)
+      BasisBladeWithSign.zero
     } else {
       geometric(left, right)
     }
@@ -44,6 +44,16 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
 
   val dotAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     leftComplement(dot(rightComplement(a), rightComplement(b)))
+
+  private def isBulk(a: BasisBlade): Boolean =
+    require(basis.neg == 0)
+    geometric(a, a).sign != Sign.Zero
+
+  val bulk: SingleOp = (a: BasisBlade) =>
+    if (isBulk(a)) BasisBladeWithSign(a, Sign.Positive) else BasisBladeWithSign.zero
+
+  val weight: SingleOp = (a: BasisBlade) =>
+    if (isBulk(a)) BasisBladeWithSign.zero else BasisBladeWithSign(a, Sign.Positive)
 
   private def checkBasis(left: HasBasis, right: HasBasis): Unit = {
     require(left.basis == basis)

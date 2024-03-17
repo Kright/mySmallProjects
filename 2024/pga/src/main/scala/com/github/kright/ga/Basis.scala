@@ -21,16 +21,18 @@ case class Basis(pos: Int,
 
   private val rule = MultiplicationRules()
 
-  val geometric: MultiplicationTable = MultiplicationTable(rule.geometric)
-  val wedge: MultiplicationTable = MultiplicationTable(rule.wedge)
-  val dot: MultiplicationTable = MultiplicationTable(rule.dot)
+  val geometric = MultiplicationTable(rule.geometric)
+  val wedge = MultiplicationTable(rule.wedge)
+  val dot = MultiplicationTable(rule.dot)
   
   val geometricAntiproduct = MultiplicationTable(rule.geometricAntiproduct)
   val wedgeAntiproduct = MultiplicationTable(rule.wedgeAntiproduct)
   val dotAntiproduct = MultiplicationTable(rule.dotAntiproduct)
   
-  val leftComplement: SingleOpTable = SingleOpTable(rule.leftComplement)
-  val rightComplement: SingleOpTable = SingleOpTable(rule.rightComplement)
+  val leftComplement = SingleOpTable(rule.leftComplement)
+  val rightComplement = SingleOpTable(rule.rightComplement)
+  val bulk = SingleOpTable(rule.bulk)
+  val weight = SingleOpTable(rule.weight)
 
   override def equals(obj: Any): Boolean =
     if (this eq obj.asInstanceOf[Object]) return true

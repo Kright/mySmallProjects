@@ -222,3 +222,11 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
       }
     }
   }
+
+  test("buld and weight sum") {
+    forAnyBasis{
+      forAll(basis.multivectorsGen) { v =>
+        assert((v.bulk + v.weight) === v)
+      }
+    }
+  }
