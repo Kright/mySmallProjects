@@ -224,9 +224,21 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   }
 
   test("buld and weight sum") {
-    forAnyBasis{
+    forAnyBasis {
       forAll(basis.multivectorsGen) { v =>
         assert((v.bulk + v.weight) === v)
+      }
+    }
+  }
+
+  test("sandwich products") {
+    forAnyBasis {
+      forAll(basis.multivectorsGen, basis.multivectorsGen, basis.multivectorsGen) { (a, b, mid) =>
+        assert(a ⟑ mid ⟑ a.reverse === a.geometricSandwich(mid))
+        assert(a ⟑ b ⟑ mid ⟑ b.reverse ⟑ a.reverse === a.geometric(b).geometricSandwich(mid))
+
+        assert(a ⟇ mid ⟇ a.antiReverse === a.geometricAntiproductSandwich(mid))
+        assert(a ⟇ b ⟇ mid ⟇ b.antiReverse ⟇ a.antiReverse === a.geometricAntiproduct(b).geometricAntiproductSandwich(mid))
       }
     }
   }

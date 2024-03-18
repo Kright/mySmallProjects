@@ -82,6 +82,11 @@ object MultiVector:
     def geometricAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometricAntiproduct)
     def wedgeAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedgeAntiproduct)
     def dotAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dotAntiproduct)
+    
+    def geometricSandwich(middle: MultiVector[T]): MultiVector[T] =
+      left.geometric(middle).geometric(left.reverse)
+    def geometricAntiproductSandwich(middle: MultiVector[T]): MultiVector[T] =
+      left.geometricAntiproduct(middle).geometricAntiproduct(left.antiReverse)
 
     def rightComplement: MultiVector[T] = applySingleOp(left.basis.rightComplement)
     def leftComplement: MultiVector[T] = applySingleOp(left.basis.leftComplement)
@@ -132,3 +137,9 @@ object MultiVector:
 
     def /(scalarDivider: Double): MultiVector[Double] =
       left * (1.0 / scalarDivider)
+
+    def norm: Double =
+      math.sqrt(left.values.values.map(v => v * v).sum)
+
+    def normalizedByWeight: MultiVector[Double] =
+      left / left.weight.norm

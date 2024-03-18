@@ -20,33 +20,48 @@ def main(): Unit =
         "z" -> z,
       )
 
-    val a = MultiVector[Symbolic](
-      "x" -> Symbolic.Symbol("ax"),
-      "y" -> Symbolic.Symbol("ay"),
-      "z" -> Symbolic.Symbol("az"),
-      "w" -> Symbolic.Constant(1.0),
-    )
+    //    val a = MultiVector[Symbolic](
+    //      "x" -> Symbolic.Symbol("ax"),
+    //      "y" -> Symbolic.Symbol("ay"),
+    //      "z" -> Symbolic.Symbol("az"),
+    //      "w" -> Symbolic.Constant(1.0),
+    //    )
+    //
+    //    val b = MultiVector[Symbolic](
+    //      "x" -> Symbolic.Symbol("bx"),
+    //      "y" -> Symbolic.Symbol("by"),
+    //      "w" -> Symbolic.Constant(1.0),
+    //    )
 
-    val b = MultiVector[Symbolic](
-      "x" -> Symbolic.Symbol("bx"),
-      "y" -> Symbolic.Symbol("by"),
-      "w" -> Symbolic.Constant(1.0),
-    )
-
-    println(a.wedge(b).toMultilineString)
+    //    println(a.wedge(b).toMultilineString)
 
     // line
     println(point(1, 0, 0).wedge(point(0, 1, 0)).toMultilineString)
 
     // plane
-    println(point(1, 0, 0).wedge(point(0, 1, 0)).wedge(point(1, 1, 0)))
+    val xy0 = point(0, 0, 0).wedge(point(2, 0, 0)).wedge(point(0, 2, 0)).normalizedByWeight
+    println(s"xy0 = ${xy0}")
 
-    val mv = point(1, 2, 3).wedge(point(4, 5, 6))
-    println(mv.dot(mv))
-    println(mv.dotAntiproduct(mv))
+    val xy_up1 = point(0, 0, 1).wedge(point(2, 0, 1)).wedge(point(0, 2, 1)).normalizedByWeight
+    println(s"xy_up1 = ${xy_up1}")
 
-    println(basis.reverse.toPrettyString(basis.bladesByOrder))
-    println(basis.antiReverse.toPrettyString(basis.bladesByOrder))
+    val p = point(2, 7, 10)
+
+    val mirrored = xy0.geometricAntiproduct(p).geometricAntiproduct(xy0.antiReverse)
+    println(mirrored / mirrored.weight.norm)
+
+    val mirroredP = xy_up1 ⟇ xy0 ⟇ p ⟇ xy0.antiReverse ⟇ xy_up1.antiReverse
+    println(s"mirroredP = ${mirroredP.filter((b, v) => v != 0.0)}")
+
+    val moveUp2 = xy_up1 ⟇ xy0
+
+    println(s"move up by 2 = ${moveUp2}")
+
+    val plane45 = point(0, 0, 0).wedge(point(1, 0, 0)).wedge(point(0, 1, 1)).normalizedByWeight
+    println(s"plane45 = ${plane45}")
+
+    println(s"rot90 = ${plane45 ⟇ xy0}")
+    println(s"rot90 up1 = ${plane45 ⟇ xy_up1}")
   }
 
 
