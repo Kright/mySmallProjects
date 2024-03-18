@@ -40,6 +40,12 @@ def main(): Unit =
 
     // plane
     println(point(1, 0, 0).wedge(point(0, 1, 0)).wedge(point(1, 1, 0)))
+
+    val mv = point(1, 2, 3).wedge(point(4, 5, 6))
+    println(mv.dot(mv))
+    println(mv.dotAntiproduct(mv))
+
+    println(basis.reverse.toPrettyString(basis.bladesByOrder))
   }
 
 
@@ -47,17 +53,17 @@ def printMultiplicationTables()(using Basis): Unit = {
   val maxLen = 5
 
   println("geometric")
-  println(basis.geometric.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println(basis.geometric.toPrettyString(basis.bladesByOrder, maxLen))
   println("geometricAntiproduct")
-  println(basis.geometricAntiproduct.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println(basis.geometricAntiproduct.toPrettyString(basis.bladesByOrder, maxLen))
 
   println("dot")
-  println(basis.dot.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println(basis.dot.toPrettyString(basis.bladesByOrder, maxLen))
   println("antidot")
-  println(basis.dotAntiproduct.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println(basis.dotAntiproduct.toPrettyString(basis.bladesByOrder, maxLen))
 
   println("wedge")
-  println(basis.wedge.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println(basis.wedge.toPrettyString(basis.bladesByOrder, maxLen))
   println("antiwedge")
-  println(basis.wedgeAntiproduct.toPrettyString(summon[Basis].bladesByOrder, maxLen))
+  println(basis.wedgeAntiproduct.toPrettyString(basis.bladesByOrder, maxLen))
 }

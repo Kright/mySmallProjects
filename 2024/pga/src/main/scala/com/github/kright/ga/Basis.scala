@@ -33,6 +33,7 @@ case class Basis(pos: Int,
   val rightComplement = SingleOpTable(rule.rightComplement)
   val bulk = SingleOpTable(rule.bulk)
   val weight = SingleOpTable(rule.weight)
+  val reverse = SingleOpTable(rule.reverse)
 
   override def equals(obj: Any): Boolean =
     if (this eq obj.asInstanceOf[Object]) return true

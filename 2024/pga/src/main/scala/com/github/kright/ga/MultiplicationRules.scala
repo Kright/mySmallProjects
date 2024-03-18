@@ -50,10 +50,18 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
     geometric(a, a).sign != Sign.Zero
 
   val bulk: SingleOp = (a: BasisBlade) =>
-    if (isBulk(a)) BasisBladeWithSign(a, Sign.Positive) else BasisBladeWithSign.zero
+    if (isBulk(a)) BasisBladeWithSign(a) else BasisBladeWithSign.zero
 
   val weight: SingleOp = (a: BasisBlade) =>
-    if (isBulk(a)) BasisBladeWithSign.zero else BasisBladeWithSign(a, Sign.Positive)
+    if (isBulk(a)) BasisBladeWithSign.zero else BasisBladeWithSign(a)
+
+  val reverse: SingleOp = (a: BasisBlade) =>
+    a.basisVectors
+      .reverse
+      .map(v => BasisBladeWithSign(BasisBlade(v)(using a.basis)))
+      .fold(BasisBladeWithSign(basis.scalarBlade))(geometric(_, _))
+
+  val antiReverse: SingleOp = (a: BasisBlade) => ???
 
   private def checkBasis(left: HasBasis, right: HasBasis): Unit = {
     require(left.basis == basis)

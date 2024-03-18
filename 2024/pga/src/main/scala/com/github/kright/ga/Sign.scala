@@ -11,6 +11,12 @@ sealed trait Sign:
   def unary_- : Sign =
     Sign(-this.toInt)
 
+  def power(pow: Int): Sign =
+    require(pow >= 0)
+    this match
+      case Sign.Positive => Sign.Positive
+      case Sign.Zero => if (pow == 0) Sign.Positive else Sign.Zero
+      case Sign.Negative => if (pow % 2 == 1) Sign.Negative else Sign.Positive
 
 object Sign:
   def apply(number: Int): Sign =

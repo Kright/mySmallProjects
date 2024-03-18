@@ -16,6 +16,15 @@ class SingleOpTable(private val basis: Basis) extends SingleOp:
   override def apply(x: BasisBlade): BasisBladeWithSign =
     data(getPos(x))
 
+  private def toPrettyString(v: BasisBladeWithSign): String =
+    v.sign match
+      case Sign.Positive => v.basisBlade.toString
+      case Sign.Negative => s"-${v.basisBlade}"
+      case Sign.Zero => "0"
+
+  def toPrettyString(bladesOrder: IndexedSeq[BasisBlade]): String =
+    bladesOrder.map(b => s"${b} -> ${toPrettyString(this(b))}").mkString("[", ", ", "]")
+
 
 object SingleOpTable:
   def apply(op: SingleOp)(using basis: Basis): SingleOpTable =

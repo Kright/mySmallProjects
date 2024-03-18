@@ -87,6 +87,7 @@ object MultiVector:
     def leftComplement: MultiVector[T] = applySingleOp(left.basis.leftComplement)
     def bulk: MultiVector[T] = applySingleOp(left.basis.bulk)
     def weight: MultiVector[T] = applySingleOp(left.basis.weight)
+    def reverse: MultiVector[T] = applySingleOp(left.basis.reverse)
 
     // unicode symbols: https://projectivegeometricalgebra.org/
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)
