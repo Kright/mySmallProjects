@@ -24,7 +24,7 @@ case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis
     toString("(", ", ", ")")
 
   def toString(start: String, separator: String, end: String): String =
-    s"MultiVector${values.toSeq.sortWith((p1, p2) => (p1._1.order < p2._1.order) || (p1._1.bits < p2._1.bits)).map { (b, v) => s"$b -> ${v}" }.mkString(start, separator, end)}"
+    s"MultiVector${values.toSeq.sortWith((p1, p2) => (p1._1.grade < p2._1.grade) || (p1._1.bits < p2._1.bits)).map { (b, v) => s"$b -> ${v}" }.mkString(start, separator, end)}"
 
   def toMultilineString: String =
     toString("(\n", "\n", "\n)")

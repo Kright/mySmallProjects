@@ -56,11 +56,11 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
     if (isBulk(a)) BasisBladeWithSign.zero else BasisBladeWithSign(a)
 
   val reverse: SingleOp = (a: BasisBlade) =>
-    val gr = a.order
+    val gr = a.grade
     BasisBladeWithSign(a, Sign.Negative.power(gr * (gr - 1) / 2))
 
   val antiReverse: SingleOp = (a: BasisBlade) =>
-    val ag = a.basis.vectorsCount - a.order
+    val ag = a.antiGrade
     BasisBladeWithSign(a, Sign.Negative.power(ag * (ag - 1) / 2))
 
   private def checkBasis(left: HasBasis, right: HasBasis): Unit = {

@@ -16,7 +16,7 @@ case class Basis(pos: Int,
   def scalarBlade: BasisBlade = blades(0)
   def antiScalarBlade: BasisBlade = bladesByOrder.last
 
-  val bladesByOrder: IndexedSeq[BasisBlade] = blades.sortBy(_.order)
+  val bladesByOrder: IndexedSeq[BasisBlade] = blades.sortBy(_.grade)
   require(basisNames.size == vectorsCount)
 
   private val rule = MultiplicationRules()

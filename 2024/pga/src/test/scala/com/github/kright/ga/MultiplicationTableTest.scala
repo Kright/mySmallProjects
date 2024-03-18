@@ -9,8 +9,8 @@ class MultiplicationTableTest extends AnyFunSuite:
     forAnyBasis {
       val dotTable = basis.dot
 
-      for (left <- basis.blades.filter(_.order == 1);
-           right <- basis.blades.filter(_.order == 1) if left.bits <= right.bits) {
+      for (left <- basis.blades.filter(_.grade == 1);
+           right <- basis.blades.filter(_.grade == 1) if left.bits <= right.bits) {
         assert(dotTable(left, right) == dotTable(right, left),
           s"""left = ${left},
              |right = ${right},
@@ -26,8 +26,8 @@ class MultiplicationTableTest extends AnyFunSuite:
     forAnyBasis {
       val wedge = basis.wedge
 
-      for (left <- basis.blades.filter(_.order == 1);
-           right <- basis.blades.filter(_.order == 1) if left.bits <= right.bits) {
+      for (left <- basis.blades.filter(_.grade == 1);
+           right <- basis.blades.filter(_.grade == 1) if left.bits <= right.bits) {
         val w1 = wedge(left, right)
         val w2 = wedge(right, left)
 

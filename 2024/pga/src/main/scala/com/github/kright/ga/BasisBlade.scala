@@ -10,8 +10,11 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
   def basisVectors: Seq[BasisVector] =
     basis.vectors.filter(contains)
 
-  def order: Int =
+  def grade: Int =
     Integer.bitCount(bits)
+
+  def antiGrade: Int =
+    basis.vectorsCount - grade
 
   def commonBasisVectors(other: BasisBlade): Seq[BasisVector] =
     require(basis == other.basis)

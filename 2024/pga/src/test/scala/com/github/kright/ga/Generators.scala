@@ -35,4 +35,4 @@ object Generators:
       }
 
     def bladesGen(order: Int): Gen[MultiVector[Double]] =
-      multivectorsGen.map(_.filter((b, v) => b.order == order))
+      multivectorsGen.map(_.filter((b, v) => b.grade == order))
