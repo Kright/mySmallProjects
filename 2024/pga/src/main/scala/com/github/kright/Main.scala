@@ -46,6 +46,7 @@ def main(): Unit =
     println(mv.dotAntiproduct(mv))
 
     println(basis.reverse.toPrettyString(basis.bladesByOrder))
+    println(basis.antiReverse.toPrettyString(basis.bladesByOrder))
   }
 
 

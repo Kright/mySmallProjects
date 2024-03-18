@@ -88,6 +88,7 @@ object MultiVector:
     def bulk: MultiVector[T] = applySingleOp(left.basis.bulk)
     def weight: MultiVector[T] = applySingleOp(left.basis.weight)
     def reverse: MultiVector[T] = applySingleOp(left.basis.reverse)
+    def antiReverse: MultiVector[T] = applySingleOp(left.basis.antiReverse)
 
     // unicode symbols: https://projectivegeometricalgebra.org/
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)
