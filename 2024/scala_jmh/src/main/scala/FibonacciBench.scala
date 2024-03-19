@@ -119,7 +119,7 @@ class FibonacciBench:
 
     m  
 
-  @Benchmark
+//  @Benchmark
   def realMicroInterpreterFib(task: FibTask): Int = {
     val stack = new IntStack(64)
     stack.push(task.n)
@@ -130,7 +130,7 @@ class FibonacciBench:
     stack.head
   }
 
-  @Benchmark
+//  @Benchmark
   def realMicroInterpreterFibOptimized(task: FibTask): Int = {
     val stack = new IntStack(64)
     stack.push(task.n)
@@ -141,7 +141,7 @@ class FibonacciBench:
     stack.head
   }
   
-  @Benchmark
+//  @Benchmark
   def realMicroInterpreterFibOptimizedV2(task: FibTask): Int = {
     val stack = new IntStack(64)
     stack.push(task.n)
@@ -152,12 +152,12 @@ class FibonacciBench:
     stack.head
   }
 
-  @Benchmark
+//  @Benchmark
   def measureNative(task: FibTask): Int = {
     nativeFib(task.n)
   }
 
-  @Benchmark
+//  @Benchmark
   def measureShadowStack(task: FibTask): Int = {
     val stack = new IntStack(64)
     stack.push(task.n)
@@ -167,7 +167,7 @@ class FibonacciBench:
     stack.head
   }
 
-  @Benchmark
+//  @Benchmark
   def hardcodedMicroInterpreterFib(task: FibTask): Int = {
     val stack = new IntStack(64)
     stack.push(task.n)
@@ -176,3 +176,5 @@ class FibonacciBench:
     require(stack.head == task.expected)
     stack.head
   }
+
+  
