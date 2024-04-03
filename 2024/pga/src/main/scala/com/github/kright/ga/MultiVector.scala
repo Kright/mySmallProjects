@@ -1,5 +1,7 @@
 package com.github.kright.ga
 
+import com.github.kright.symbolic.{Symbolic, SymbolicSimplifier, SymbolicToPrettyString, SymbolicTransformSeq}
+
 import scala.collection.mutable
 import scala.math.Numeric.Implicits.infixNumericOps
 
@@ -24,7 +26,10 @@ case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis
     toString("(", ", ", ")")
 
   def toString(start: String, separator: String, end: String): String =
-    s"MultiVector${values.toSeq.sortWith((p1, p2) => (p1._1.grade < p2._1.grade) || (p1._1.bits < p2._1.bits)).map { (b, v) => s"$b -> ${v}" }.mkString(start, separator, end)}"
+    if (values.isEmpty) 
+      "MultiVector()"
+    else 
+      s"MultiVector${values.toSeq.sortWith((p1, p2) => (p1._1.grade < p2._1.grade) || (p1._1.bits < p2._1.bits)).map { (b, v) => s"$b -> ${v}" }.mkString(start, separator, end)}"
 
   def toMultilineString: String =
     toString("(\n", "\n", "\n)")
@@ -82,7 +87,7 @@ object MultiVector:
     def geometricAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometricAntiproduct)
     def wedgeAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedgeAntiproduct)
     def dotAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dotAntiproduct)
-    
+
     def geometricSandwich(middle: MultiVector[T]): MultiVector[T] =
       left.geometric(middle).geometric(left.reverse)
     def geometricAntiproductSandwich(middle: MultiVector[T]): MultiVector[T] =
@@ -131,6 +136,9 @@ object MultiVector:
     def squareMagnitude: T =
       left.values.values.map(v => v * v).sum
 
+    def withoutZeros: MultiVector[T] =
+      left.filter((_, v) => v != num.zero)
+
   extension (left: MultiVector[Double])
     def magnitude: Double =
       math.sqrt(left.squareMagnitude)
@@ -143,3 +151,9 @@ object MultiVector:
 
     def normalizedByWeight: MultiVector[Double] =
       left / left.weight.norm
+
+
+  val symbolicToPrettyString = SymbolicTransformSeq(Seq(SymbolicSimplifier(), SymbolicToPrettyString())).asSymbolicTransform
+
+  extension (left: MultiVector[Symbolic])
+    def toPrettyMultilineString = left.withoutZeros.mapValues(symbolicToPrettyString).toMultilineString

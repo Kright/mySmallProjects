@@ -14,6 +14,7 @@ case class Basis(pos: Int,
   val bitsMap: Int = (1 << vectorsCount) - 1
 
   def scalarBlade: BasisBlade = blades(0)
+
   def antiScalarBlade: BasisBlade = bladesByOrder.last
 
   val bladesByOrder: IndexedSeq[BasisBlade] = blades.sortBy(_.grade)
@@ -24,11 +25,11 @@ case class Basis(pos: Int,
   val geometric = MultiplicationTable(rule.geometric)
   val wedge = MultiplicationTable(rule.wedge)
   val dot = MultiplicationTable(rule.dot)
-  
+
   val geometricAntiproduct = MultiplicationTable(rule.geometricAntiproduct)
   val wedgeAntiproduct = MultiplicationTable(rule.wedgeAntiproduct)
   val dotAntiproduct = MultiplicationTable(rule.dotAntiproduct)
-  
+
   val leftComplement = SingleOpTable(rule.leftComplement)
   val rightComplement = SingleOpTable(rule.rightComplement)
   val bulk = SingleOpTable(rule.bulk)
@@ -46,11 +47,6 @@ case class Basis(pos: Int,
   override def hashCode(): Int =
     scala.util.hashing.byteswap32((pos << 16) + (neg << 8) + zeros)
 
-  def use[T](f: Basis ?=> T): T =
-    given basis: Basis = this
-
-    f
-
 
 def basis(using b: Basis): Basis = b
 
@@ -60,8 +56,13 @@ object Basis:
   val ga4: Basis = Basis(4, 0, 0, BasisNames("xyzw"))
 
   // projective geometric algebra
-  val pga2: Basis = Basis(2, 0, 1, BasisNames("xyw"))
-  val pga3: Basis = Basis(3, 0, 1, BasisNames("xyzw"))
+  val pga2: BasisPGA2 = BasisPGA2(BasisNames("xyw"))
+  val pga3: BasisPGA3 = BasisPGA3(BasisNames("xyzw"))
+
+  extension[B <: Basis] (basis: B)
+    def use[T](f: B ?=> T): T =
+      given b: B = basis
+      f
 
 
 trait HasBasis(val basis: Basis)

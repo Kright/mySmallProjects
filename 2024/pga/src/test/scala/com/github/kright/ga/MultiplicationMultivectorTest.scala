@@ -72,9 +72,9 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   }
 
   // I don't know why, but this is not working
-//  test("dot antiproduct product associativity for blades") {
-//    checkAssociativityForBasisBlades { b => (l, r) => l.dotAntiproduct(r) }
-//  }
+  //  test("dot antiproduct product associativity for blades") {
+  //    checkAssociativityForBasisBlades { b => (l, r) => l.dotAntiproduct(r) }
+  //  }
 
   test("wedge antiproduct product associativity for blades") {
     checkAssociativityForBasisBlades { b => (l, r) => l.wedgeAntiproduct(r) }
