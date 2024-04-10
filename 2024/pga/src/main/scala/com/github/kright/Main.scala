@@ -9,17 +9,17 @@ type M = MultiVector[Double]
 @main
 def main(): Unit =
   Basis.pga3.use {
-    //    val a = MultiVector[Symbolic](
-    //      "x" -> Symbolic.Symbol("ax"),
-    //      "y" -> Symbolic.Symbol("ay"),
-    //      "z" -> Symbolic.Symbol("az"),
-    //      "w" -> Symbolic.Constant(1.0),
+    //    val a = MultiVector[SimpleSymbolic](
+    //      "x" -> SimpleSymbolic.Symbol("ax"),
+    //      "y" -> SimpleSymbolic.Symbol("ay"),
+    //      "z" -> SimpleSymbolic.Symbol("az"),
+    //      "w" -> SimpleSymbolic.Constant(1.0),
     //    )
     //
-    //    val b = MultiVector[Symbolic](
-    //      "x" -> Symbolic.Symbol("bx"),
-    //      "y" -> Symbolic.Symbol("by"),
-    //      "w" -> Symbolic.Constant(1.0),
+    //    val b = MultiVector[SimpleSymbolic](
+    //      "x" -> SimpleSymbolic.Symbol("bx"),
+    //      "y" -> SimpleSymbolic.Symbol("by"),
+    //      "w" -> SimpleSymbolic.Constant(1.0),
     //    )
 
     //    println(a.wedge(b).toMultilineString)
@@ -58,9 +58,9 @@ def main(): Unit =
 
     println((randomPlane ⟇ xy0).normalizedByWeight.withoutZeros)
 
-    val mass = MultiVector[Symbolic]("" -> Symbol("mass"))
-    val velocity = MultiVector[Symbolic]("x" -> Symbol("vx"))
-    val impulse: MultiVector[Symbolic] = mass ⟇ velocity
+    val mass = MultiVector[SimpleSymbolic]("" -> SimpleSymbolic("mass"))
+    val velocity = MultiVector[SimpleSymbolic]("x" -> SimpleSymbolic("vx"))
+    val impulse: MultiVector[SimpleSymbolic] = mass ⟇ velocity
     println(s"mass = ${mass}")
     println(s"velocity = ${velocity}")
     println(s"impulse = ${mass.geometric(velocity).toPrettyMultilineString}")
@@ -71,12 +71,12 @@ def main(): Unit =
      */
 
     println(
-      point(Symbol("rx"), Symbol("ry"), Symbol("rz"), Constant(1.0))
-        .geometric(vector(Symbol("px"), Symbol("py"), Symbol("pz"))).toPrettyMultilineString)
+      point[SimpleSymbolic](SimpleSymbolic("rx"), SimpleSymbolic("ry"), SimpleSymbolic("rz"), SimpleSymbolic(1.0))
+        .geometric(vector(SimpleSymbolic("px"), SimpleSymbolic("py"), SimpleSymbolic("pz"))).toPrettyMultilineString)
 
     {
-      val r = point(Symbol("rx"), Symbol("ry"), Symbol("rz"), Constant(1.0))
-      val f = vector[Symbolic](Symbol("fx"), Symbol("fy"), Symbol("fz"))
+      val r = point[SimpleSymbolic](SimpleSymbolic("rx"), SimpleSymbolic("ry"), SimpleSymbolic("rz"), SimpleSymbolic.one)
+      val f = vector[SimpleSymbolic](SimpleSymbolic("fx"), SimpleSymbolic("fy"), SimpleSymbolic("fz"))
       println(r.wedge(f).toPrettyMultilineString)
       println(f.wedge(r).toPrettyMultilineString)
     }
@@ -85,11 +85,11 @@ def main(): Unit =
 @main
 def multiplyTrivectors(): Unit =
   Basis.pga3.use {
-    def makeTrivector(number: Int) = MultiVector[Symbolic](
-      "xyz" -> Symbol(s"xyz${number}"),
-      "xyw" -> Symbol(s"xyw${number}"),
-      "xwz" -> Symbol(s"xwz${number}"),
-      "wyz" -> Symbol(s"wyz${number}"),
+    def makeTrivector(number: Int) = MultiVector[SimpleSymbolic](
+      "xyz" -> SimpleSymbolic(s"xyz${number}"),
+      "xyw" -> SimpleSymbolic(s"xyw${number}"),
+      "xwz" -> SimpleSymbolic(s"xwz${number}"),
+      "wyz" -> SimpleSymbolic(s"wyz${number}"),
     )
 
     val trivector1 = makeTrivector(1)
@@ -102,12 +102,12 @@ def multiplyTrivectors(): Unit =
 
     //    val r = point(0.0, 0.0, 0.0) ∧ point(1.0, 0.0, 0.0) ∧ point(0.0, 1.0, 0.0)
 
-    def makePoint(number: Int) = MultiVector[Symbolic](
-      "x" -> Symbol(s"x${number}"),
-      "y" -> Symbol(s"y${number}"),
-      "z" -> Symbol(s"z${number}"),
-      "w" -> Symbol(s"w${number}"),
-    )
+    def makePoint(number: Int): MultiVector[SimpleSymbolic] = MultiVector[String](
+      "x" -> s"x${number}",
+      "y" -> s"y${number}",
+      "z" -> s"z${number}",
+      "w" -> s"w${number}",
+    ).mapValues(SimpleSymbolic(_))
 
     val r = makePoint(1) ⟑ makePoint(2) ⟑ makePoint(3)
     println(r.toPrettyMultilineString)
@@ -135,8 +135,9 @@ def printMultiplicationTables()(using Basis): Unit = {
 
 @main
 def makeInertiaTensor(): Unit = Basis.pga3.use {
-  import Symbolic._
+  import SimpleSymbolic.*
 
-  val t = point[Symbolic](Symbol("px"), Symbol("py"), Constant(0.0)).geometricAntiproduct(vector[Symbolic](Symbol("vx"), Symbol("vy"), Constant(0.0)))
+  val t = point[SimpleSymbolic](SimpleSymbolic("px"), SimpleSymbolic("py"), SimpleSymbolic(0.0))
+    .geometricAntiproduct(vector[SimpleSymbolic](SimpleSymbolic("vx"), SimpleSymbolic("vy"), SimpleSymbolic(0.0)))
   println(t.withoutZeros.toPrettyMultilineString)
 }

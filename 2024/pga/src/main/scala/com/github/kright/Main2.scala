@@ -37,26 +37,27 @@ def main2(): Unit = Basis.pga2.use {
   println()
 
   println(
-    point[Symbolic](Symbol("fx"), Symbol("fy"), Constant(1.0))
-      .wedge(point(Symbol("rx"), Symbol("ry"), Constant(1.0))).toPrettyMultilineString)
+    point[SimpleSymbolic](SimpleSymbolic("fx"), SimpleSymbolic("fy"), SimpleSymbolic.one)
+      .wedge(point(SimpleSymbolic("rx"), SimpleSymbolic("ry"), SimpleSymbolic.one)).toPrettyMultilineString)
 
 
   //  println(
-  //    vector[Symbolic](Symbol("fx"), Symbol("fy"))
-  //      .wedge(point(Symbol("rx"), Symbol("ry"), Constant(1.0))).toMultilineString)
+  //    vector[Symbolic](SimpleSymbolic("fx"), SimpleSymbolic("fy"))
+  //      .wedge(point(SimpleSymbolic("rx"), SimpleSymbolic("ry"), Constant(1.0))).toMultilineString)
   //
   //
   //
   //  println(
-  //    vector[Symbolic](Symbol("fx"), Symbol("fy"))
-  //      .geometricAntiproduct(point(Symbol("rx"), Symbol("ry"), Constant(1.0))).toMultilineString)
+  //    vector[Symbolic](SimpleSymbolic("fx"), SimpleSymbolic("fy"))
+  //      .geometricAntiproduct(point(SimpleSymbolic("rx"), SimpleSymbolic("ry"), Constant(1.0))).toMultilineString)
 }
 
 @main
 def d3() = Basis.pga3.use {
   import com.github.kright.ga.BasisPGA3.*
 
-  println(
-    point[Symbolic](Symbol("fx"), Symbol("fy"), Symbol("fz"), Constant(1.0))
-      .wedge(point(Symbol("rx"), Symbol("ry"), Symbol("rz"), Constant(1.0))).toPrettyMultilineString)
+  val f = point[Double | String]("fx", "fy", "fz", 1.0).mapValues(SimpleSymbolic(_))
+  val r = point[Double | String]("rx", "ry", "rz", 1.0).mapValues(SimpleSymbolic(_))
+  
+  println(f.wedge(r).toPrettyMultilineString)
 }

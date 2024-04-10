@@ -1,7 +1,7 @@
 package com.github.kright.symbolic
 
 class SymbolicTransformSeq(val rules: Seq[SymbolicPartialTransform]) extends SymbolicPartialTransform:
-  override def apply(symbolic: Symbolic): Option[Symbolic] =
+  override def apply(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
     var current = symbolic
     var anyUpdated = false
     for (r <- rules) {

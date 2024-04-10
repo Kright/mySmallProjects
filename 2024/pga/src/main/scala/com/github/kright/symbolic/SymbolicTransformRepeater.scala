@@ -5,13 +5,13 @@ import scala.annotation.tailrec
 class SymbolicTransformRepeater(rule: SymbolicPartialTransform, maxRepeatCount: Int) extends SymbolicPartialTransform:
   require(maxRepeatCount > 0)
 
-  override def apply(symbolic: Symbolic): Option[Symbolic] =
+  override def apply(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
     rule(symbolic) match
       case None => None
       case Some(next) => Option(repeatRule(next, maxRepeatCount - 1))
 
   @tailrec
-  private def repeatRule(current: Symbolic, remainingRetires: Int): Symbolic =
+  private def repeatRule(current: SimpleSymbolic, remainingRetires: Int): SimpleSymbolic =
     if (remainingRetires > 0) {
       rule(current) match
         case None => current

@@ -1,3 +1,3 @@
 package com.github.kright.symbolic
 
-trait SymbolicTransform extends ((Symbolic) => Symbolic)
+trait SymbolicTransform extends (SimpleSymbolic => SimpleSymbolic)

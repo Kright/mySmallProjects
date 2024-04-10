@@ -1,22 +1,22 @@
 package com.github.kright.symbolic
 
-trait SymbolicPartialTransform extends (Symbolic => Option[Symbolic]):
+trait SymbolicPartialTransform extends (SimpleSymbolic => Option[SimpleSymbolic]):
   self =>
 
-  def apply(elems: Seq[Symbolic]): Option[Seq[Symbolic]] = {
+  def apply(elems: Seq[SimpleSymbolic]): Option[Seq[SimpleSymbolic]] = {
     val newElems = elems.map(apply)
     if (newElems.forall(_.isEmpty)) return None
     Option(newElems.zip(elems).map((next, prev) => next.getOrElse(prev)))
   }
 
   def asSymbolicTransform: SymbolicTransform =
-    (s: Symbolic) => self(s).getOrElse(s)
+    (s: SimpleSymbolic) => self(s).getOrElse(s)
 
   def repeat(maxRepeatCount: Int): SymbolicTransformRepeater =
     SymbolicTransformRepeater(this, maxRepeatCount)
 
   def withDebugLog(prefix: String): SymbolicPartialTransform =
-    (s: Symbolic) => {
+    (s: SimpleSymbolic) => {
       val r = self(s)
       println(s"$prefix: $s => $r")
       r
