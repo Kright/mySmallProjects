@@ -2,16 +2,16 @@ package com.github.kright.symbolic
 
 import scala.annotation.tailrec
 
-class SymbolicTransformRepeater(rule: SymbolicPartialTransform, maxRepeatCount: Int) extends SymbolicPartialTransform:
+class SymbolicTransformRepeater[F, S](rule: SymbolicPartialTransform[F, S], maxRepeatCount: Int) extends SymbolicPartialTransform[F, S]:
   require(maxRepeatCount > 0)
 
-  override def apply(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
+  override def apply(symbolic: Symbolic[F, S]): Option[Symbolic[F, S]] =
     rule(symbolic) match
       case None => None
       case Some(next) => Option(repeatRule(next, maxRepeatCount - 1))
 
   @tailrec
-  private def repeatRule(current: SimpleSymbolic, remainingRetires: Int): SimpleSymbolic =
+  private def repeatRule(current: Symbolic[F, S], remainingRetires: Int): Symbolic[F, S] =
     if (remainingRetires > 0) {
       rule(current) match
         case None => current

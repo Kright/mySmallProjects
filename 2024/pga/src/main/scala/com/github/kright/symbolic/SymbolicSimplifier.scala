@@ -2,10 +2,10 @@ package com.github.kright.symbolic
 
 
 object SymbolicSimplifier:
-  def apply(maxRepeatCount: Int = 64): SymbolicTransformRepeater =
+  def apply(maxRepeatCount: Int = 64): SymbolicTransformRepeater[SimpleSymbolic.Func, SimpleSymbolic.Symbol] =
     SymbolicTransformAny(allSimplifiers()).repeat(maxRepeatCount)
 
-  def allSimplifiers(): Seq[SymbolicPartialTransform] = Seq(
+  def allSimplifiers(): Seq[SymbolicPartialTransform[SimpleSymbolic.Func, SimpleSymbolic.Symbol]] = Seq(
     BinarySubToUnary(),
     SumZeroRemover(),
     ProductOneRemover(),
@@ -17,8 +17,10 @@ object SymbolicSimplifier:
     SumWithMinusSumFlattener(),
     DoubleMinusRemover(),
   )
+  
+  type TransformHelper = SymbolicRecursiveTransformHelper[SimpleSymbolic.Func, SimpleSymbolic.Symbol]
 
-  class SumZeroRemover extends SymbolicRecursiveTransformHelper:
+  class SumZeroRemover extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("+", elems) if elems.exists(_.isZero) => Option(sumOrElement(elems.filterNot(_.isZero)))
@@ -30,7 +32,7 @@ object SymbolicSimplifier:
         case 1 => elements.head
         case 2 => SimpleSymbolic("+", elements)
 
-  class BinarySubToUnary extends SymbolicRecursiveTransformHelper:
+  class BinarySubToUnary extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("-", elems) if elems.size == 2 => Option {
@@ -40,7 +42,7 @@ object SymbolicSimplifier:
         }
         case _ => None
 
-  class ProductOneRemover extends SymbolicRecursiveTransformHelper:
+  class ProductOneRemover extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("*", elems) if elems.exists(_.isOne) => Option(sumOrElement(elems.filterNot(_.isOne)))
@@ -52,13 +54,13 @@ object SymbolicSimplifier:
         case 1 => elements.head
         case 2 => Symbolic.Func("*", elements)
 
-  class ProductZeroRemover extends SymbolicRecursiveTransformHelper:
+  class ProductZeroRemover extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("*", elems) if elems.exists(_.isZero) => Option(SimpleSymbolic.zero)
         case _ => None
 
-  class SumFlattener extends SymbolicRecursiveTransformHelper:
+  class SumFlattener extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("+", elems) if elems.exists {
@@ -72,7 +74,7 @@ object SymbolicSimplifier:
         }
         case _ => None
 
-  class SumWithMinusSumFlattener extends SymbolicRecursiveTransformHelper:
+  class SumWithMinusSumFlattener extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("+", elems) if elems.exists {
@@ -86,7 +88,7 @@ object SymbolicSimplifier:
         }
         case _ => None
 
-  class ProductFlattener extends SymbolicRecursiveTransformHelper:
+  class ProductFlattener extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("*", elems) if elems.exists {
@@ -100,7 +102,7 @@ object SymbolicSimplifier:
         }
         case _ => None
 
-  class ProductOfSumToSumOfProducts extends SymbolicRecursiveTransformHelper:
+  class ProductOfSumToSumOfProducts extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("*", elems) if elems.exists(_.isFunc("+")) => {
@@ -111,13 +113,13 @@ object SymbolicSimplifier:
         }
         case _ => None
 
-  class DoubleMinusRemover extends SymbolicRecursiveTransformHelper:
+  class DoubleMinusRemover extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("-", Seq(Symbolic.Func("-", Seq(elem)))) => Option(elem)
         case _ => None
 
-  class MinusToTheUpOfProduct extends SymbolicRecursiveTransformHelper:
+  class MinusToTheUpOfProduct extends TransformHelper:
     override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
       symbolic match
         case Symbolic.Func("*", elems) if elems.exists(isUnaryMinus) => Option {

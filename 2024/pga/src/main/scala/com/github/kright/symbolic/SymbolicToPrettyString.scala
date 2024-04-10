@@ -1,6 +1,6 @@
 package com.github.kright.symbolic
 
-class SymbolicToPrettyString extends SymbolicRecursiveTransformHelper:
+class SymbolicToPrettyString extends SymbolicRecursiveTransformHelper[SimpleSymbolic.Func, SimpleSymbolic.Symbol]:
   override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
     Option {
       symbolic match
