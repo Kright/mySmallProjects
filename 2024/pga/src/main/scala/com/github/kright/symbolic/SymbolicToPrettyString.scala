@@ -1,15 +1,24 @@
 package com.github.kright.symbolic
 
-class SymbolicToPrettyString extends SymbolicRecursiveTransformHelper[SimpleSymbolic.Func, SimpleSymbolic.Symbol]:
-  override protected def patternTransform(symbolic: SimpleSymbolic): Option[SimpleSymbolic] =
-    Option {
-      symbolic match
-        case Symbolic.Symbol(arg) => arg match
-          case v: Double => SimpleSymbolic(v.toString)
-          case s: String => SimpleSymbolic(s)
-        case Symbolic.Func("*", elems) => SimpleSymbolic(elems.mkString("", " * ", ""))
-        case Symbolic.Func("+", elems) => SimpleSymbolic(elems.map(_.toString).mkString("(", " + ", ")").replace("+ -", "- "))
-        case Symbolic.Func("-", elems) if elems.size == 1 => SimpleSymbolic(s"-${elems.head}")
-        case Symbolic.Func(name, elems) if elems.size == 2 => SimpleSymbolic(elems.mkString("(", s" $name ", ")"))
-        case Symbolic.Func(name, elems) => SimpleSymbolic(elems.mkString(s"${name}(", ", ", ")"))
-    }
+import com.github.kright.symbolic.SimpleSymbolic.Func
+
+
+class SymbolicToPrettyString extends SymbolicTransform[SimpleSymbolic.Func, SimpleSymbolic.Symbol, Nothing, String]:
+  override def apply(expr: Symbolic[Func, SimpleSymbolic.Symbol]): Symbolic[Nothing, String] =
+    expr.flatMap({
+      case d: Double => Symbolic.Symbol[String](d.toString)
+      case s: String => Symbolic.Symbol[String](s)
+    }, {
+      case ("*", elems) => Symbolic.Symbol[String](asSymbolValues(elems).mkString("", " * ", ""))
+      case ("+", elems) => Symbolic.Symbol[String](asSymbolValues(elems).mkString("(", " + ", ")").replace("+ -", "- "))
+      case ("-", elems) if elems.size == 1 => Symbolic.Symbol[String](s"-${asSymbol(elems.head).value}")
+      case (name, elems) if elems.size == 2 => Symbolic.Symbol[String](asSymbolValues(elems).mkString("(", s" $name ", ")"))
+      case (name, elems) => Symbolic.Symbol[String](asSymbolValues(elems).mkString(s"${name}(", ", ", ")"))
+    })
+
+  private def asSymbol(symbol: Symbolic[Nothing, String]): Symbolic.Symbol[String] =
+    val result@Symbolic.Symbol(_) = symbol
+    result
+
+  private def asSymbolValues(symbols: Seq[Symbolic[Nothing, String]]) =
+    symbols.map(asSymbol(_).value)

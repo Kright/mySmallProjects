@@ -1,6 +1,6 @@
 package com.github.kright.ga
 
-import com.github.kright.symbolic.{SimpleSymbolic, Symbolic, SymbolicSimplifier, SymbolicToPrettyString, SymbolicTransformSeq}
+import com.github.kright.symbolic.{SimpleSymbolic, Symbolic, SymbolicSimplifier, SymbolicToPrettyString}
 
 import scala.collection.mutable
 import scala.math.Numeric.Implicits.infixNumericOps
@@ -153,7 +153,7 @@ object MultiVector:
       left / left.weight.norm
 
 
-  val symbolicToPrettyString = SymbolicTransformSeq(Seq(SymbolicSimplifier(), SymbolicToPrettyString())).asSymbolicTransform
+  val symbolicToPrettyString = SymbolicSimplifier().asSymbolicTransform.andThen(SymbolicToPrettyString())
 
   extension (left: MultiVector[SimpleSymbolic])
     def toPrettyMultilineString = left.withoutZeros.mapValues(symbolicToPrettyString).toMultilineString

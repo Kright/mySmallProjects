@@ -4,8 +4,8 @@ package com.github.kright.symbolic
 sealed trait Symbolic[+F, +S]
 
 object Symbolic:
-  case class Symbol[+A](a: A) extends Symbolic[Nothing, A]:
-    override def toString: String = a.toString
+  case class Symbol[+A](value: A) extends Symbolic[Nothing, A]:
+    override def toString: String = value.toString
 
   case class Func[+F, +A](func: F, args: Seq[Symbolic[F, A]]) extends Symbolic[F, A]
 
