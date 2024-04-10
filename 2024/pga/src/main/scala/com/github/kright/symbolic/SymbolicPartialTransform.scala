@@ -9,7 +9,7 @@ trait SymbolicPartialTransform[F, S] extends (Symbolic[F, S] => Option[Symbolic[
     Option(newElems.zip(elems).map((next, prev) => next.getOrElse(prev)))
   }
 
-  def asSymbolicTransform: SymbolicTransform[F, S] =
+  def asSymbolicTransform: SymbolicTransform[F, S, F, S] =
     (s: Symbolic[F, S]) => self(s).getOrElse(s)
 
   def repeat(maxRepeatCount: Int): SymbolicTransformRepeater[F, S] =
