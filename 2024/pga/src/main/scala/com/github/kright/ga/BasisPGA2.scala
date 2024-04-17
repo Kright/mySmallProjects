@@ -30,8 +30,8 @@ object BasisPGA2:
 //    val result = shiftedLine ⟇ centerLine
 //    result.withoutZeros
     MultiVector(
-      "x" -> halfDx,
-      "y" -> -halfDy,
+      "x" -> halfDy,
+      "y" -> -halfDx,
       "xyw" -> num.one,
     ).withoutZeros
 
