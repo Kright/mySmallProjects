@@ -14,6 +14,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.18" % "test",
   "org.scalatestplus" %% "scalacheck-1-17" % "3.2.18.0" % "test",
   "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
-  "com.github.Kright.ScalaGameMath" % "symbolic_3" % "v0.4.2"
-//  "com.github.Kright.ScalaGameMath" % "scalagamemath_3" % "v0.4.2",
+  "symbolic" %% "symbolic" % "0.4.3", // local
+//    "com.github.Kright.ScalaGameMath" % "symbolic_3" % "0.4.2",
 )

@@ -1,7 +1,6 @@
 package com.github.kright.ga
 
 import com.github.kright.symbolic.SymbolicStr.given
-import com.github.kright.symbolic.transform.PartialTransformListener
 import com.github.kright.symbolic.transform.simplifiers.SymbolicStrSimplifier
 import com.github.kright.symbolic.{SymbolicStr, SymbolicToPrettyString}
 
@@ -160,5 +159,9 @@ object MultiVector:
 
   private val symbolicSimplify = SymbolicStrSimplifier.simplify(maxRepeatCount = 64)
 
-  extension (left: MultiVector[SymbolicStr])
-    def toPrettyMultilineString = left.mapValues(symbolicSimplify.withListener(PartialTransformListener.printTransformed()) .transform ).withoutZeros.mapValues(SymbolicToPrettyString(_)).mapValues(_.replace("+ -1.0 *", "-")).toMultilineString
+  extension (v: MultiVector[SymbolicStr])
+    def toPrettyMultilineString =
+      v.mapValues(symbolicSimplify.transform)
+        .withoutZeros
+        .mapValues(SymbolicToPrettyString(_))
+        .toMultilineString

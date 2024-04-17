@@ -11,6 +11,9 @@ def main2(): Unit = Basis.pga2.use {
   //  val rot = rotate(math.sqrt(3) / 2, 0.5).normalizedByWeight
   val rot = rotate(0.999, math.sqrt(1.0 - 0.999 * 0.999)).normalizedByWeight
   val tr = translate(1.0, 2.0).normalizedByWeight
+  
+  val shifted = tr.mapValues(SymbolicStr(_)).geometricAntiproductSandwich(point(SymbolicStr("x"), SymbolicStr("y")))
+  println(shifted.toPrettyMultilineString)
 
   //  println(rot)
   //  println(tr)
@@ -40,35 +43,10 @@ def main2(): Unit = Basis.pga2.use {
 def mainTranslate() = Basis.pga3.use {
   import com.github.kright.ga.BasisPGA3.*
 
-  val center = point[Double](0.0, 0.0, 0.0)
-  val dx = vector[Double](1.0, 0.0, 0.0)
-  val dy = vector[Double](0.0, 1.0, 0.0)
-  val dz = vector[Double](0.0, 0.0, 1.0)
+  val motionOp = makeTranslate(1.0, 2.0, 4.0)
 
-  val planeUp = center.wedge(center + dx).wedge(center + dy).withoutZeros
-  println(planeUp.toMultilineString)
-
-  val planeUpShifted = (center + dz).wedge(center + dx + dz).wedge(center + dy + dz).withoutZeros
-  println(planeUpShifted.toMultilineString)
-
-  val planeUpShiftedV2 = (center + dz * 2).wedge(center + dx + dz * 2).wedge(center + dy + dz * 2).withoutZeros
-  println(planeUpShiftedV2.toMultilineString)
-
-  val motion = planeUp.geometricAntiproduct(planeUpShifted)
-  val motionR = planeUp.geometricAntiproduct(planeUpShifted).reverse
-  println(motion)
-  println(motionR)
-
-  println(motion.geometricAntiproductSandwich(center).withoutZeros.normalizedByWeight.toMultilineString)
-  println(motionR.geometricAntiproductSandwich(center).withoutZeros.normalizedByWeight.toMultilineString)
-
-  println("my translate")
-
-  val motionOp = makeTranslate(1.0, 0.0, 0.0, shift = 1.0)
-
-
-  println(motionOp)
-  println(motionOp.geometricAntiproductSandwich(point(0.0, 0.0, 0.0)).withoutZeros)
+  println(motionOp.mapValues(SymbolicStr(_)).geometricAntiproductSandwich(point(SymbolicStr("x"), SymbolicStr("y"), SymbolicStr("z"))).toPrettyMultilineString)
+  println(motionOp.geometricAntiproductSandwich(point(4.0, 8.0, 9.0)).withoutZeros)
 
   val motionOpS = motionOp.mapValues(SymbolicStr(_))
 
@@ -92,8 +70,6 @@ def mainTranslate() = Basis.pga3.use {
        |movedMoment = ${movedMoment.toPrettyMultilineString}
        |expected = ${expectedMovedMoment.toPrettyMultilineString}
        |""".stripMargin)
-  //
-  //  val simplifier = SymbolicSimplifier()
-  //
-  //  println(r.wedge(f).toPrettyMultilineString)
 }
+
+// todo rename geometricAntiProduct to antiGeometric and etc

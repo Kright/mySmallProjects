@@ -23,12 +23,17 @@ object BasisPGA2:
     )
 
   def translate[T](halfDx: T, halfDy: T)(using num: Numeric[T], basis: BasisPGA2): MultiVector[T] =
-    val perpDx = -halfDy
-    val perpDy = halfDx
-    val centerLine = point(num.zero, num.zero).wedge(point(perpDx, perpDy))
-    val shiftedLine = point(halfDx, halfDy).wedge(point(perpDx + halfDx, perpDy + halfDy))
-    val result = shiftedLine ⟇ centerLine
-    result.withoutZeros
+//    val perpDx = -halfDy
+//    val perpDy = halfDx
+//    val centerLine = point(num.zero, num.zero).wedge(point(perpDx, perpDy))
+//    val shiftedLine = point(halfDx, halfDy).wedge(point(perpDx + halfDx, perpDy + halfDy))
+//    val result = shiftedLine ⟇ centerLine
+//    result.withoutZeros
+    MultiVector(
+      "x" -> halfDx,
+      "y" -> -halfDy,
+      "xyw" -> num.one,
+    ).withoutZeros
 
   def rotate[T](cos2a: T, sin2a: T)(using num: Numeric[T], basis: BasisPGA2): MultiVector[T] =
     val centerLine = point(num.zero, num.zero).wedge(point(num.one, num.zero))
