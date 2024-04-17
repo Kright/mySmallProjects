@@ -1,6 +1,9 @@
 package com.github.kright.ga
 
-import com.github.kright.symbolic.{SimpleSymbolic, Symbolic, SymbolicSimplifier, SymbolicToPrettyString}
+import com.github.kright.symbolic.SymbolicStr.given
+import com.github.kright.symbolic.transform.PartialTransformListener
+import com.github.kright.symbolic.transform.simplifiers.SymbolicStrSimplifier
+import com.github.kright.symbolic.{SymbolicStr, SymbolicToPrettyString}
 
 import scala.collection.mutable
 import scala.math.Numeric.Implicits.infixNumericOps
@@ -26,9 +29,9 @@ case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis
     toString("(", ", ", ")")
 
   def toString(start: String, separator: String, end: String): String =
-    if (values.isEmpty) 
+    if (values.isEmpty)
       "MultiVector()"
-    else 
+    else
       s"MultiVector${values.toSeq.sortWith((p1, p2) => (p1._1.grade < p2._1.grade) || (p1._1.bits < p2._1.bits)).map { (b, v) => s"$b -> ${v}" }.mkString(start, separator, end)}"
 
   def toMultilineString: String =
@@ -152,8 +155,10 @@ object MultiVector:
     def normalizedByWeight: MultiVector[Double] =
       left / left.weight.norm
 
+    def normalizedByNorm: MultiVector[Double] =
+      left / left.norm
 
-  val symbolicToPrettyString = SymbolicSimplifier().asSymbolicTransform.andThen(SymbolicToPrettyString())
+  private val symbolicSimplify = SymbolicStrSimplifier.simplify(maxRepeatCount = 64)
 
-  extension (left: MultiVector[SimpleSymbolic])
-    def toPrettyMultilineString = left.withoutZeros.mapValues(symbolicToPrettyString).toMultilineString
+  extension (left: MultiVector[SymbolicStr])
+    def toPrettyMultilineString = left.mapValues(symbolicSimplify.withListener(PartialTransformListener.printTransformed()) .transform ).withoutZeros.mapValues(SymbolicToPrettyString(_)).mapValues(_.replace("+ -1.0 *", "-")).toMultilineString
