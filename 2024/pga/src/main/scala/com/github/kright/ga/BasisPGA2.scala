@@ -22,7 +22,7 @@ object BasisPGA2:
       "y" -> y,
     )
 
-  def translate[T](halfDx: T, halfDy: T)(using num: Numeric[T], basis: BasisPGA2): MultiVector[T] =
+  def translateX2[T](halfDx: T, halfDy: T)(using num: Numeric[T], basis: BasisPGA2): MultiVector[T] =
 //    val perpDx = -halfDy
 //    val perpDy = halfDx
 //    val centerLine = point(num.zero, num.zero).wedge(point(perpDx, perpDy))

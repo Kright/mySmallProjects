@@ -5,70 +5,41 @@ import com.github.kright.ga.{Basis, MultiVector}
 import com.github.kright.symbolic.SymbolicStr
 import com.github.kright.symbolic.SymbolicStr.given
 
+import scala.math.Numeric.Implicits.infixNumericOps
+
 
 @main
-def main2(): Unit = Basis.pga2.use {
-  //  val rot = rotate(math.sqrt(3) / 2, 0.5).normalizedByWeight
-  val rot = rotate(0.999, math.sqrt(1.0 - 0.999 * 0.999)).normalizedByWeight
-  val tr = translate(1.0, 2.0).normalizedByWeight
-  
-  val shifted = tr.mapValues(SymbolicStr(_)).antiSandwich(point(SymbolicStr("x"), SymbolicStr("y")))
-  println(shifted.toPrettyMultilineString)
-
-  //  println(rot)
-  //  println(tr)
-  //  println(rot.geometricAntiproduct(tr))
-  //  println(tr.geometricAntiproduct(rot))
-  //
-  //  println(rot.geometricAntiproductSandwich(point(0.0, 0.0)).withoutZeros)
-  //  println(rot.geometricAntiproduct(tr).geometricAntiproductSandwich(point(0.0, 0.0)).withoutZeros)
-  //  println(tr.geometricAntiproduct(rot).geometricAntiproductSandwich(point(0.0, 0.0)).withoutZeros)
-
-
-  //  println(rot.geometricAntiproductSandwich(point(0.0, 1.0)).withoutZeros)
-  //  println(rot.geometricAntiproductSandwich(point(1.0, 0.0)).withoutZeros)
-  //  println(rot.geometricAntiproductSandwich(point(0.0, 0.0)).withoutZeros)
-
-  println(point(0.0, 0.0).geometric(vector(1.0, 0.0)).withoutZeros)
-  println(point(0.0, 1.0).geometric(vector(1.0, 0.0)).withoutZeros)
-  println(point(1.0, 0.0).geometric(vector(1.0, 0.0)).withoutZeros)
-  println(point(1.0, 1.0).geometric(vector(1.0, 0.0)).withoutZeros)
-  println()
-
-  println(tr.antiSandwich(point(1.0, 0.0)).withoutZeros)
-  println(tr.antiSandwich(vector(1.0, 0.0)).withoutZeros)
+def translate2d(): Unit = Basis.pga2.use {
+  println(rotate(SymbolicStr("cos"), SymbolicStr("sin")).toPrettyMultilineString)
+  val tr = translateX2(SymbolicStr("dx") * SymbolicStr(0.5), SymbolicStr("dy") * SymbolicStr(0.5))
+  println(tr.antiSandwich(point(SymbolicStr("x"), SymbolicStr("y"))).toPrettyMultilineString)
+  println(tr.antiSandwich(vector(SymbolicStr("x"), SymbolicStr("y"))).toPrettyMultilineString)
 }
 
 @main
-def mainTranslate() = Basis.pga3.use {
+def translate3d() = Basis.pga3.use {
   import com.github.kright.ga.BasisPGA3.*
 
-  val motionOp = makeTranslate(1.0, 2.0, 4.0)
-
-  println(motionOp.mapValues(SymbolicStr(_)).antiSandwich(point(SymbolicStr("x"), SymbolicStr("y"), SymbolicStr("z"))).toPrettyMultilineString)
-  println(motionOp.antiSandwich(point(4.0, 8.0, 9.0)).withoutZeros)
-
-  val motionOpS = motionOp.mapValues(SymbolicStr(_))
+  val translateXYZ = translateX2(SymbolicStr("dx") * SymbolicStr(0.5), SymbolicStr("dy") * SymbolicStr(0.5), SymbolicStr("dz") * SymbolicStr(0.5))
 
   val f = vector[Double | String]("fx", "fy", "fz").mapValues(SymbolicStr(_))
   val r = point[Double | String]("rx", "ry", "rz", 1.0).mapValues(SymbolicStr(_))
-  //  val moment = r.wedge(f)
   val moment = f.wedge(r)
 
-  val shiftedF = motionOpS.antiSandwich(f).withoutZeros
-  val shiftedR = motionOpS.antiSandwich(r).withoutZeros
+  val shiftedF = translateXYZ.antiSandwich(f).withoutZeros
+  val shiftedR = translateXYZ.antiSandwich(r).withoutZeros
   val expectedMovedMoment = shiftedF.wedge(shiftedR)
 
   println(s"shiftedF = ${shiftedF.toPrettyMultilineString}")
   println(s"shiftedR = ${shiftedR.toPrettyMultilineString}")
 
-  val movedMoment = motionOpS.antiSandwich(moment)
+  val movedMoment = translateXYZ.antiSandwich(moment)
 
   println(
     s"""
        |moment = ${moment.toPrettyMultilineString}
-       |movedMoment = ${movedMoment.toPrettyMultilineString}
-       |expected = ${expectedMovedMoment.toPrettyMultilineString}
+       |movedMoment = ${movedMoment.toPrettyOrderedMultilineString}
+       |expected = ${expectedMovedMoment.toPrettyOrderedMultilineString}
        |""".stripMargin)
 }
 

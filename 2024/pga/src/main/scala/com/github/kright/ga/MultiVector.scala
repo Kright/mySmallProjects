@@ -156,10 +156,20 @@ object MultiVector:
       left / left.norm
 
   private val symbolicSimplify = SymbolicStrSimplifier.simplify(maxRepeatCount = 64)
+  private val symbolicOrder = SymbolicStrSimplifier.sortArgs()
 
   extension (v: MultiVector[SymbolicStr])
+    def simplified =
+      v.mapValues(symbolicSimplify.combine(symbolicOrder).transform).withoutZeros
+
     def toPrettyMultilineString =
       v.mapValues(symbolicSimplify.transform)
+        .withoutZeros
+        .mapValues(SymbolicToPrettyString(_))
+        .toMultilineString
+
+    def toPrettyOrderedMultilineString =
+      v.mapValues(symbolicSimplify.combine(symbolicOrder).transform)
         .withoutZeros
         .mapValues(SymbolicToPrettyString(_))
         .toMultilineString

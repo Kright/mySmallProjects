@@ -23,7 +23,7 @@ object BasisPGA3:
       "z" -> z,
     )
 
-  def makeReflection(nx: Double, ny: Double, nz: Double, shift: Double)(using basis: BasisPGA3): MultiVector[Double] = 
+  def makeReflection(nx: Double, ny: Double, nz: Double, shift: Double)(using basis: BasisPGA3): MultiVector[Double] =
     val xyz = shift * 0.5
     val mult = 1.0 / Math.sqrt(nx * nx + ny * ny + nz * nz)
     val xyw = nz * mult
@@ -37,16 +37,18 @@ object BasisPGA3:
       "yzw" -> nx * mult
     )
 
-  def makeTranslate(dx: Double, dy: Double, dz: Double)(using basis: BasisPGA3): MultiVector[Double] = 
+  def translateX2[T](halfDx: T, halfDy: T, halfDz: T)(using num: Numeric[T], basis: BasisPGA3): MultiVector[T] =
+    MultiVector[T](
+      "xy" -> halfDz,
+      "xz" -> -halfDy,
+      "yz" -> halfDx,
+      "xyzw" -> num.one,
+    ).withoutZeros
+
+  def translate(dx: Double, dy: Double, dz: Double)(using basis: BasisPGA3): MultiVector[Double] =
     //      val r1 = makeReflection(nx, ny, nz, 0)
     //      val r2 = makeReflection(nx, ny, nz, len(vector(nx, ny, nz))
     //      r2.geometricAntiproduct(r1)
-
-    MultiVector(
-      "xy" -> dz * 0.5,
-      "xz" -> -dy * 0.5,
-      "yz" -> dx * 0.5,
-      "xyzw" -> 1.0
-    ).withoutZeros
+    translateX2(dx * 0.5, dy * 0.5, dz * 0.5)
   
   //todo method for making plane
