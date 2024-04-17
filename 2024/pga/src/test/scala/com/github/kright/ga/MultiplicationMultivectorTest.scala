@@ -60,7 +60,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   }
 
   test("geometric antiproduct associativity for multivectors") {
-    checkAssociativityForMultivectors { b => (l, r) => l.geometricAntiproduct(r) }
+    checkAssociativityForMultivectors { b => (l, r) => l.antiGeometric(r) }
   }
 
   test("dot product associativity for blades") {
@@ -77,7 +77,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   //  }
 
   test("wedge antiproduct product associativity for blades") {
-    checkAssociativityForBasisBlades { b => (l, r) => l.wedgeAntiproduct(r) }
+    checkAssociativityForBasisBlades { b => (l, r) => l.antiWedge(r) }
   }
 
   test("wedge product with two same vectors is zero") {
@@ -173,7 +173,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   test("geometric antiproduct corresponds to geometric product") {
     forAnyBasis {
       forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
-        assert(a.geometric(b).rightComplement === a.rightComplement.geometricAntiproduct(b.rightComplement))
+        assert(a.geometric(b).rightComplement === a.rightComplement.antiGeometric(b.rightComplement))
       }
     }
   }
@@ -181,7 +181,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   test("wedge antiproduct corresponds to wedge product") {
     forAnyBasis {
       forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
-        assert(a.wedge(b).rightComplement === a.rightComplement.wedgeAntiproduct(b.rightComplement))
+        assert(a.wedge(b).rightComplement === a.rightComplement.antiWedge(b.rightComplement))
       }
     }
   }
@@ -189,7 +189,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   test("dot antiproduct corresponds to dot product") {
     forAnyBasis {
       forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
-        assert(a.dot(b).rightComplement === a.rightComplement.dotAntiproduct(b.rightComplement))
+        assert(a.dot(b).rightComplement === a.rightComplement.antiDot(b.rightComplement))
       }
     }
   }
@@ -234,11 +234,11 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
   test("sandwich products") {
     forAnyBasis {
       forAll(basis.multivectorsGen, basis.multivectorsGen, basis.multivectorsGen) { (a, b, mid) =>
-        assert(a ⟑ mid ⟑ a.reverse === a.geometricSandwich(mid))
-        assert(a ⟑ b ⟑ mid ⟑ b.reverse ⟑ a.reverse === a.geometric(b).geometricSandwich(mid))
+        assert(a ⟑ mid ⟑ a.reverse === a.sandwich(mid))
+        assert(a ⟑ b ⟑ mid ⟑ b.reverse ⟑ a.reverse === a.geometric(b).sandwich(mid))
 
-        assert(a ⟇ mid ⟇ a.antiReverse === a.geometricAntiproductSandwich(mid))
-        assert(a ⟇ b ⟇ mid ⟇ b.antiReverse ⟇ a.antiReverse === a.geometricAntiproduct(b).geometricAntiproductSandwich(mid))
+        assert(a ⟇ mid ⟇ a.antiReverse === a.antiSandwich(mid))
+        assert(a ⟇ b ⟇ mid ⟇ b.antiReverse ⟇ a.antiReverse === a.antiGeometric(b).antiSandwich(mid))
       }
     }
   }

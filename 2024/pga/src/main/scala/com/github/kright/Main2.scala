@@ -12,7 +12,7 @@ def main2(): Unit = Basis.pga2.use {
   val rot = rotate(0.999, math.sqrt(1.0 - 0.999 * 0.999)).normalizedByWeight
   val tr = translate(1.0, 2.0).normalizedByWeight
   
-  val shifted = tr.mapValues(SymbolicStr(_)).geometricAntiproductSandwich(point(SymbolicStr("x"), SymbolicStr("y")))
+  val shifted = tr.mapValues(SymbolicStr(_)).antiSandwich(point(SymbolicStr("x"), SymbolicStr("y")))
   println(shifted.toPrettyMultilineString)
 
   //  println(rot)
@@ -35,8 +35,8 @@ def main2(): Unit = Basis.pga2.use {
   println(point(1.0, 1.0).geometric(vector(1.0, 0.0)).withoutZeros)
   println()
 
-  println(tr.geometricAntiproductSandwich(point(1.0, 0.0)).withoutZeros)
-  println(tr.geometricAntiproductSandwich(vector(1.0, 0.0)).withoutZeros)
+  println(tr.antiSandwich(point(1.0, 0.0)).withoutZeros)
+  println(tr.antiSandwich(vector(1.0, 0.0)).withoutZeros)
 }
 
 @main
@@ -45,8 +45,8 @@ def mainTranslate() = Basis.pga3.use {
 
   val motionOp = makeTranslate(1.0, 2.0, 4.0)
 
-  println(motionOp.mapValues(SymbolicStr(_)).geometricAntiproductSandwich(point(SymbolicStr("x"), SymbolicStr("y"), SymbolicStr("z"))).toPrettyMultilineString)
-  println(motionOp.geometricAntiproductSandwich(point(4.0, 8.0, 9.0)).withoutZeros)
+  println(motionOp.mapValues(SymbolicStr(_)).antiSandwich(point(SymbolicStr("x"), SymbolicStr("y"), SymbolicStr("z"))).toPrettyMultilineString)
+  println(motionOp.antiSandwich(point(4.0, 8.0, 9.0)).withoutZeros)
 
   val motionOpS = motionOp.mapValues(SymbolicStr(_))
 
@@ -55,14 +55,14 @@ def mainTranslate() = Basis.pga3.use {
   //  val moment = r.wedge(f)
   val moment = f.wedge(r)
 
-  val shiftedF = motionOpS.geometricAntiproductSandwich(f).withoutZeros
-  val shiftedR = motionOpS.geometricAntiproductSandwich(r).withoutZeros
+  val shiftedF = motionOpS.antiSandwich(f).withoutZeros
+  val shiftedR = motionOpS.antiSandwich(r).withoutZeros
   val expectedMovedMoment = shiftedF.wedge(shiftedR)
 
   println(s"shiftedF = ${shiftedF.toPrettyMultilineString}")
   println(s"shiftedR = ${shiftedR.toPrettyMultilineString}")
 
-  val movedMoment = motionOpS.geometricAntiproductSandwich(moment)
+  val movedMoment = motionOpS.antiSandwich(moment)
 
   println(
     s"""

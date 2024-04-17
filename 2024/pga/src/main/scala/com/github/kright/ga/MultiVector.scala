@@ -82,18 +82,16 @@ object MultiVector:
       new MultiVector[T](result.toMap)(using left.basis)
     }
 
-    def geometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometric)
-    def wedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedge)
-    def dot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dot)
+    infix def geometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometric)
+    infix def wedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedge)
+    infix def dot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dot)
 
-    def geometricAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometricAntiproduct)
-    def wedgeAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedgeAntiproduct)
-    def dotAntiproduct(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dotAntiproduct)
+    infix def antiGeometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiGeometric)
+    infix def antiWedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiWedge)
+    infix def antiDot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiDot)
 
-    def geometricSandwich(middle: MultiVector[T]): MultiVector[T] =
-      left.geometric(middle).geometric(left.reverse)
-    def geometricAntiproductSandwich(middle: MultiVector[T]): MultiVector[T] =
-      left.geometricAntiproduct(middle).geometricAntiproduct(left.antiReverse)
+    infix def sandwich(middle: MultiVector[T]): MultiVector[T] = left.geometric(middle).geometric(left.reverse)
+    infix def antiSandwich(middle: MultiVector[T]): MultiVector[T] = left.antiGeometric(middle).antiGeometric(left.antiReverse)
 
     def rightComplement: MultiVector[T] = applySingleOp(left.basis.rightComplement)
     def leftComplement: MultiVector[T] = applySingleOp(left.basis.leftComplement)
@@ -104,19 +102,19 @@ object MultiVector:
 
     // unicode symbols: https://projectivegeometricalgebra.org/
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)
-    def ∧(right: MultiVector[T]): MultiVector[T] = wedge(right)
-    def ⋅(right: MultiVector[T]): MultiVector[T] = dot(right)
+    infix def ∧(right: MultiVector[T]): MultiVector[T] = wedge(right)
+    infix def ⋅(right: MultiVector[T]): MultiVector[T] = dot(right)
 
-    def ⟇(right: MultiVector[T]): MultiVector[T] = geometricAntiproduct(right)
-    def ∨(right: MultiVector[T]): MultiVector[T] = wedgeAntiproduct(right)
-    def ◦(right: MultiVector[T]): MultiVector[T] = dotAntiproduct(right)
+    infix def ⟇(right: MultiVector[T]): MultiVector[T] = antiGeometric(right)
+    infix def ∨(right: MultiVector[T]): MultiVector[T] = antiWedge(right)
+    infix def ◦(right: MultiVector[T]): MultiVector[T] = antiDot(right)
 
-    def +(right: MultiVector[T]): MultiVector[T] =
+    infix def +(right: MultiVector[T]): MultiVector[T] =
       MultiVector[T]((left.values.keySet ++ right.values.keySet).toSeq.map { b =>
         b -> (left(b) + right(b))
       })(using left.basis)
 
-    def -(right: MultiVector[T]): MultiVector[T] =
+    infix def -(right: MultiVector[T]): MultiVector[T] =
       MultiVector[T]((left.values.keySet ++ right.values.keySet).toSeq.map { b =>
         b -> (left(b) - right(b))
       })(using left.basis)
@@ -124,7 +122,7 @@ object MultiVector:
     def unary_- : MultiVector[T] =
       left.map((b, v) => -v)
 
-    def *(scalarMultiplier: T): MultiVector[T] =
+    infix def *(scalarMultiplier: T): MultiVector[T] =
       left.map((b, t) => t * scalarMultiplier)
 
     def apply(right: MultiVector[T]): MultiVector[T] = geometric(right)

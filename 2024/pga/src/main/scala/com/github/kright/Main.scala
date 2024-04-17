@@ -37,7 +37,7 @@ def main(): Unit =
 
     val p = point(2.0, 7.0, 10.0)
 
-    val mirrored = xy0.geometricAntiproduct(p).geometricAntiproduct(xy0.antiReverse)
+    val mirrored = xy0.antiGeometric(p).antiGeometric(xy0.antiReverse)
     println(mirrored / mirrored.weight.norm)
 
     val mirroredP = xy_up1 ⟇ xy0 ⟇ p ⟇ xy0.antiReverse ⟇ xy_up1.antiReverse
@@ -89,15 +89,15 @@ def printMultiplicationTables()(using Basis): Unit = {
   println("geometric")
   println(basis.geometric.toPrettyString(basis.bladesByOrder, maxLen))
   println("geometricAntiproduct")
-  println(basis.geometricAntiproduct.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.antiGeometric.toPrettyString(basis.bladesByOrder, maxLen))
 
   println("dot")
   println(basis.dot.toPrettyString(basis.bladesByOrder, maxLen))
   println("antidot")
-  println(basis.dotAntiproduct.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.antiDot.toPrettyString(basis.bladesByOrder, maxLen))
 
   println("wedge")
   println(basis.wedge.toPrettyString(basis.bladesByOrder, maxLen))
   println("antiwedge")
-  println(basis.wedgeAntiproduct.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.antiWedge.toPrettyString(basis.bladesByOrder, maxLen))
 }

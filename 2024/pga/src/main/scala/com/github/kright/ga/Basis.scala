@@ -26,9 +26,9 @@ case class Basis(pos: Int,
   val wedge = MultiplicationTable(rule.wedge)
   val dot = MultiplicationTable(rule.dot)
 
-  val geometricAntiproduct = MultiplicationTable(rule.geometricAntiproduct)
-  val wedgeAntiproduct = MultiplicationTable(rule.wedgeAntiproduct)
-  val dotAntiproduct = MultiplicationTable(rule.dotAntiproduct)
+  val antiGeometric = MultiplicationTable(rule.antiGeometric)
+  val antiWedge = MultiplicationTable(rule.antiWedge)
+  val antiDot = MultiplicationTable(rule.antiDot)
 
   val leftComplement = SingleOpTable(rule.leftComplement)
   val rightComplement = SingleOpTable(rule.rightComplement)

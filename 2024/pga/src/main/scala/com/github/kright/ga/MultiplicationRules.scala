@@ -36,13 +36,13 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
     val complement = a.anyComplement
     BasisBladeWithSign(complement, geometric(complement, a).sign)
 
-  val geometricAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
+  val antiGeometric: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     leftComplement(geometric(rightComplement(a), rightComplement(b)))
 
-  val wedgeAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
+  val antiWedge: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     leftComplement(wedge(rightComplement(a), rightComplement(b)))
 
-  val dotAntiproduct: Multiplication = (a: BasisBlade, b: BasisBlade) =>
+  val antiDot: Multiplication = (a: BasisBlade, b: BasisBlade) =>
     leftComplement(dot(rightComplement(a), rightComplement(b)))
 
   private def isBulk(a: BasisBlade): Boolean =
