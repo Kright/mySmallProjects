@@ -23,19 +23,18 @@ object BasisPGA3:
       "z" -> z,
     )
 
-  def makeReflection(nx: Double, ny: Double, nz: Double, shift: Double)(using basis: BasisPGA3): MultiVector[Double] =
-    val xyz = shift * 0.5
+  def plane(nx: Double, ny: Double, nz: Double, shift: Double)(using basis: BasisPGA3): MultiVector[Double] =
     val mult = 1.0 / Math.sqrt(nx * nx + ny * ny + nz * nz)
     val xyw = nz * mult
     val xzw = -ny * mult
     val yzw = nx * mult
 
     MultiVector(
-      "xyz" -> shift * 0.5,
+      "xyz" -> shift,
       "xyw" -> nz * mult,
       "xzw" -> -ny * mult,
       "yzw" -> nx * mult
-    )
+    ).withoutZeros
 
   def translateX2[T](halfDx: T, halfDy: T, halfDz: T)(using num: Numeric[T], basis: BasisPGA3): MultiVector[T] =
     MultiVector[T](

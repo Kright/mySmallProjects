@@ -90,8 +90,8 @@ object MultiVector:
     infix def antiWedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiWedge)
     infix def antiDot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiDot)
 
-    infix def sandwich(middle: MultiVector[T]): MultiVector[T] = left.geometric(middle).geometric(left.reverse)
-    infix def antiSandwich(middle: MultiVector[T]): MultiVector[T] = left.antiGeometric(middle).antiGeometric(left.antiReverse)
+    def sandwich(middle: MultiVector[T]): MultiVector[T] = left.geometric(middle).geometric(left.reverse)
+    def antiSandwich(middle: MultiVector[T]): MultiVector[T] = left.antiGeometric(middle).antiGeometric(left.antiReverse)
 
     def rightComplement: MultiVector[T] = applySingleOp(left.basis.rightComplement)
     def leftComplement: MultiVector[T] = applySingleOp(left.basis.leftComplement)
