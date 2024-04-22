@@ -12,6 +12,9 @@ case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis
   def apply(b: BasisBlade)(using num: Numeric[Value]): Value =
     values.getOrElse(b, num.zero)
 
+  def apply(b: String)(using num: Numeric[Value]): Value =
+    apply(BasisBlade(b))
+
   def map[V2](f: (BasisBlade, Value) => V2): MultiVector[V2] =
     MultiVector[V2](values.map((b, v) => b -> f(b, v)))
 
@@ -159,17 +162,13 @@ object MultiVector:
   private val symbolicOrder = SymbolicStrSimplifier.sortArgs()
 
   extension (v: MultiVector[SymbolicStr])
-    def simplified =
-      v.mapValues(symbolicSimplify.combine(symbolicOrder).transform).withoutZeros
+    def simplified: MultiVector[SymbolicStr] =
+      v.mapValues(symbolicSimplify.transform).withoutZeros
 
-    def toPrettyMultilineString =
-      v.mapValues(symbolicSimplify.transform)
-        .withoutZeros
-        .mapValues(SymbolicToPrettyString(_))
-        .toMultilineString
+    def simplifiedOrdered: MultiVector[SymbolicStr] =
+      v.mapValues(symbolicSimplify.combine(symbolicOrder).transform).withoutZeros  
 
-    def toPrettyOrderedMultilineString =
-      v.mapValues(symbolicSimplify.combine(symbolicOrder).transform)
-        .withoutZeros
+    def toPrettyMultilineString: String =
+      v.simplified
         .mapValues(SymbolicToPrettyString(_))
         .toMultilineString
