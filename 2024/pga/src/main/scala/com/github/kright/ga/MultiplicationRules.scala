@@ -15,7 +15,7 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
     else BasisBladeWithSign(BasisBlade(a.bits ^ b.bits), sign)
 
   val dot: Multiplication = (left: BasisBlade, right: BasisBlade) =>
-    if (left.hasCommonBasisVectors(right) || (left.bits == right.bits)) {
+    if (left.isContraction(right)) {
       geometric(left, right)
     } else {
       BasisBladeWithSign.zero

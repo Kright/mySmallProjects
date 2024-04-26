@@ -23,6 +23,16 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
   def hasCommonBasisVectors(other: BasisBlade): Boolean =
     (bits & other.bits) != 0
 
+  def isContraction(other: BasisBlade): Boolean =
+    val or = bits | other.bits
+    or == bits || or == other.bits
+
+  def isLeftContraction(other: BasisBlade): Boolean =
+    (bits | other.bits) == other.bits
+
+  def isRightContraction(other: BasisBlade): Boolean =
+    (bits | other.bits) == bits  
+
   /* doesnt account sign */
   def anyComplement: BasisBlade =
     BasisBlade(bits ^ basis.bitsMap)

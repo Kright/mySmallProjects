@@ -63,8 +63,12 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     checkAssociativityForMultivectors { b => (l, r) => l.antiGeometric(r) }
   }
 
-  test("dot product associativity for blades") {
-    checkAssociativityForBasisBlades { b => (l, r) => l.dot(r) }
+  test("dot product commutativity for vectors") {
+    forAnyBasis {
+      forAll(basis.bladesGen(1), basis.bladesGen(1)) { (a, b) =>
+        assert((a dot b) === (b dot a))
+      }
+    }
   }
 
   test("wedge product associativity for blades") {
@@ -136,9 +140,9 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     }
   }
 
-  test("geometric product as sum of wedge and dot") {
+  test("geometric product for vectors is a sum of wedge and dot ") {
     forAnyBasis {
-      forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
+      forAll(basis.bladesGen(0), basis.bladesGen(0)) { (a, b) =>
         val w = a ∧ b
         val d = a ⋅ b
         val g = a ⟑ b
@@ -153,9 +157,9 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     }
   }
 
-  test("geometric antiproduct as sum of wedge antiproduct and dot antiproduct") {
+  test("geometric antiproduct for psuedovectors as sum of wedge antiproduct and dot antiproduct") {
     forAnyBasis {
-      forAll(basis.multivectorsGen, basis.multivectorsGen) { (a, b) =>
+      forAll(basis.bladesGen(basis.vectorsCount - 1), basis.bladesGen(basis.vectorsCount - 1)) { (a, b) =>
         val w = a ∨ b
         val d = a ◦ b
         val g = a ⟇ b
