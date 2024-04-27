@@ -99,7 +99,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     implicit val doubleEquality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(1e-9)
 
     forAnyBasis {
-      if (basis.zeros == 0) {
+      if (basis.signature.zeros == 0) {
         forAll(basis.bladesGen(1), basis.bladesGen(1), basis.bladesGen(1)) { (a, b, c) =>
           val ma = a.magnitude
           val mb = b.magnitude
@@ -114,7 +114,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     implicit val doubleEquality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(1e-9)
 
     forAnyBasis {
-      if (basis.zeros == 0) {
+      if (basis.signature.zeros == 0) {
         forAll(Gen.containerOfN[Seq, MultiVector[Double]](4, basis.bladesGen(1))) { blades =>
           val mags = blades.map(_.magnitude)
           val totalMag = blades.reduce(_ ⟑ _).magnitude
@@ -159,7 +159,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
 
   test("geometric antiproduct for psuedovectors as sum of wedge antiproduct and dot antiproduct") {
     forAnyBasis {
-      forAll(basis.bladesGen(basis.vectorsCount - 1), basis.bladesGen(basis.vectorsCount - 1)) { (a, b) =>
+      forAll(basis.bladesGen(basis.signature.vectorsCount - 1), basis.bladesGen(basis.signature.vectorsCount - 1)) { (a, b) =>
         val w = a ∨ b
         val d = a ◦ b
         val g = a ⟇ b
@@ -202,7 +202,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
     forAnyBasis {
       val i = MultiVector(basis.antiScalarBlade)
       forAll(basis.bladesGen(1)) { a =>
-        val isEven = basis.vectorsCount % 2 == 0
+        val isEven = basis.signature.vectorsCount % 2 == 0
         if (isEven) {
           assert((a ⟑ i) === -(i ⟑ a))
         } else {
@@ -217,7 +217,7 @@ class MultiplicationMultivectorTest extends AnyFunSuite:
       val i = MultiVector(basis.antiScalarBlade)
 
       forAll(basis.bladesGen(1), basis.bladesGen(1)) { (a, b) =>
-        val isEven = basis.vectorsCount % 2 == 0
+        val isEven = basis.signature.vectorsCount % 2 == 0
         if (isEven) {
           assert(a ∧ (i ⟑ b) === -(a ⋅ b) ⟑ i)
         } else {

@@ -62,7 +62,7 @@ object MultiVector:
     apply(basis.blades.map(b => b -> math.random()))
 
   extension [T](left: MultiVector[T])(using num: Numeric[T])
-    def multiply(right: MultiVector[T], mult: MultiplicationTable): MultiVector[T] =
+    def multiply(right: MultiVector[T], mult: Multiplication): MultiVector[T] =
       require(left.basis == right.basis)
       val result = new mutable.HashMap[BasisBlade, T]()
       for ((l, lv) <- left.values) {
@@ -76,7 +76,7 @@ object MultiVector:
       }
       new MultiVector[T](result.toMap)(using left.basis)
 
-    def applySingleOp(singleOp: SingleOpTable): MultiVector[T] = {
+    def applySingleOp(singleOp: SingleOp): MultiVector[T] = {
       val result = new mutable.HashMap[BasisBlade, T]()
       for ((l, lv) <- left.values) {
         val rr = singleOp(l)
@@ -88,23 +88,23 @@ object MultiVector:
       new MultiVector[T](result.toMap)(using left.basis)
     }
 
-    infix def geometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.geometric)
-    infix def wedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.wedge)
-    infix def dot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.dot)
+    infix def geometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.rules.geometric)
+    infix def wedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.rules.wedge)
+    infix def dot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.rules.dot)
 
-    infix def antiGeometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiGeometric)
-    infix def antiWedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiWedge)
-    infix def antiDot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.antiDot)
+    infix def antiGeometric(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.rules.antiGeometric)
+    infix def antiWedge(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.rules.antiWedge)
+    infix def antiDot(right: MultiVector[T]): MultiVector[T] = multiply(right, left.basis.rules.antiDot)
 
     def sandwich(middle: MultiVector[T]): MultiVector[T] = left.geometric(middle).geometric(left.reverse)
     def antiSandwich(middle: MultiVector[T]): MultiVector[T] = left.antiGeometric(middle).antiGeometric(left.antiReverse)
 
-    def rightComplement: MultiVector[T] = applySingleOp(left.basis.rightComplement)
-    def leftComplement: MultiVector[T] = applySingleOp(left.basis.leftComplement)
-    def bulk: MultiVector[T] = applySingleOp(left.basis.bulk)
-    def weight: MultiVector[T] = applySingleOp(left.basis.weight)
-    def reverse: MultiVector[T] = applySingleOp(left.basis.reverse)
-    def antiReverse: MultiVector[T] = applySingleOp(left.basis.antiReverse)
+    def rightComplement: MultiVector[T] = applySingleOp(left.basis.rules.rightComplement)
+    def leftComplement: MultiVector[T] = applySingleOp(left.basis.rules.leftComplement)
+    def bulk: MultiVector[T] = applySingleOp(left.basis.rules.bulk)
+    def weight: MultiVector[T] = applySingleOp(left.basis.rules.weight)
+    def reverse: MultiVector[T] = applySingleOp(left.basis.rules.reverse)
+    def antiReverse: MultiVector[T] = applySingleOp(left.basis.rules.antiReverse)
 
     // unicode symbols: https://projectivegeometricalgebra.org/
     infix def ⟑(right: MultiVector[T]): MultiVector[T] = geometric(right)

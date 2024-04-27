@@ -29,8 +29,8 @@ object Generators:
       basisBladesGen.map(MultiVector(_)(using basis))
 
     def multivectorsGen: Gen[MultiVector[Double]] =
-      Gen.containerOfN[Seq, Double](basis.bladesCount, Gen.double).map { values =>
-        require(values.length == basis.bladesCount)
+      Gen.containerOfN[Seq, Double](basis.signature.bladesCount, Gen.double).map { values =>
+        require(values.length == basis.signature.bladesCount)
         MultiVector(basis.blades.zip(values))(using basis)
       }
 

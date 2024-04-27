@@ -87,17 +87,17 @@ def printMultiplicationTables()(using Basis): Unit = {
   val maxLen = 5
 
   println("geometric")
-  println(basis.geometric.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.rules.geometric.toPrettyString(basis.bladesByOrder, maxLen))
   println("geometricAntiproduct")
-  println(basis.antiGeometric.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.rules.antiGeometric.toPrettyString(basis.bladesByOrder, maxLen))
 
   println("dot")
-  println(basis.dot.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.rules.dot.toPrettyString(basis.bladesByOrder, maxLen))
   println("antidot")
-  println(basis.antiDot.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.rules.antiDot.toPrettyString(basis.bladesByOrder, maxLen))
 
   println("wedge")
-  println(basis.wedge.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.rules.wedge.toPrettyString(basis.bladesByOrder, maxLen))
   println("antiwedge")
-  println(basis.antiWedge.toPrettyString(basis.bladesByOrder, maxLen))
+  println(basis.rules.antiWedge.toPrettyString(basis.bladesByOrder, maxLen))
 }
