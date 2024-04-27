@@ -4,10 +4,10 @@ import scala.language.implicitConversions
 import scala.util.chaining.*
 
 class MultiplicationTable(private val basis: Basis) extends Multiplication:
-  private val data = new Array[BasisBladeWithSign](1 << (basis.vectorsCount * 2))
+  private val data = new Array[BasisBladeWithSign](1 << (basis.signature.vectorsCount * 2))
 
   private def getPos(left: BasisBlade, right: BasisBlade): Int =
-    (left.bits << basis.vectorsCount) + right.bits
+    (left.bits << basis.signature.vectorsCount) + right.bits
 
   private def update(left: BasisBlade, right: BasisBlade, value: BasisBladeWithSign): Unit = {
     data(getPos(left, right)) = value

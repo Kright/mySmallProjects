@@ -7,10 +7,13 @@ import com.github.kright.symbolic.{SymbolicStr, SymbolicToPrettyString}
 import scala.collection.mutable
 import scala.math.Numeric.Implicits.infixNumericOps
 
-case class MultiVector[Value](values: Map[BasisBlade, Value])(using basis: Basis) extends HasBasis(basis):
+case class MultiVector[Value](val values: Map[BasisBlade, Value])(using basis: Basis) extends HasBasis(basis):
 
   def apply(b: BasisBlade)(using num: Numeric[Value]): Value =
     values.getOrElse(b, num.zero)
+
+  def get(b: BasisBlade): Option[Value] =
+    values.get(b)  
 
   def apply(b: String)(using num: Numeric[Value]): Value =
     apply(BasisBlade(b))

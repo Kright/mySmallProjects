@@ -4,7 +4,7 @@ import scala.language.implicitConversions
 import scala.util.chaining.*
 
 class SingleOpTable(private val basis: Basis) extends SingleOp:
-  private val data = new Array[BasisBladeWithSign](basis.bladesCount)
+  private val data = new Array[BasisBladeWithSign](basis.signature.bladesCount)
 
   private def getPos(x: BasisBlade): Int =
     x.bits

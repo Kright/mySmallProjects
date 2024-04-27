@@ -46,7 +46,7 @@ class MultiplicationRules(using basis: Basis) extends HasBasis(basis):
     leftComplement(dot(rightComplement(a), rightComplement(b)))
 
   private def isBulk(a: BasisBlade): Boolean =
-    require(basis.neg == 0)
+    require(basis.signature.neg == 0)
     geometric(a, a).sign != Sign.Zero
 
   val bulk: SingleOp = (a: BasisBlade) =>

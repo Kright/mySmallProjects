@@ -1,7 +1,7 @@
 package com.github.kright.ga
 
 case class BasisVector(number: Int)(using basis: Basis) extends Ordered[BasisVector] with HasBasis(basis):
-  require(number >= 0 && number < basis.vectorsCount)
+  require(number >= 0 && number < basis.signature.vectorsCount)
 
   def bitMask: Int = 1 << number
 
@@ -13,8 +13,8 @@ case class BasisVector(number: Int)(using basis: Basis) extends Ordered[BasisVec
   }
 
   def getSquareSign: Sign =
-    if (number < basis.pos) return Sign.Positive
-    if (number < basis.pos + basis.neg) return Sign.Negative
+    if (number < basis.signature.pos) return Sign.Positive
+    if (number < basis.signature.pos + basis.signature.neg) return Sign.Negative
     Sign.Zero
 
   override def toString: String = s"${basis.basisNames.names(number)}"

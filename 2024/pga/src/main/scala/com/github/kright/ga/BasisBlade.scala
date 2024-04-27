@@ -1,7 +1,7 @@
 package com.github.kright.ga
 
 case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
-  require(bits >= 0 && bits < basis.bladesCount)
+  require(bits >= 0 && bits < basis.signature.bladesCount)
 
   def contains(v: BasisVector): Boolean =
     require(v.basis == this.basis)
@@ -14,7 +14,7 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
     Integer.bitCount(bits)
 
   def antiGrade: Int =
-    basis.vectorsCount - grade
+    basis.signature.vectorsCount - grade
 
   def commonBasisVectors(other: BasisBlade): Seq[BasisVector] =
     require(basis == other.basis)
@@ -35,11 +35,11 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
 
   /* doesnt account sign */
   def anyComplement: BasisBlade =
-    BasisBlade(bits ^ basis.bitsMap)
+    BasisBlade(bits ^ basis.signature.bitsMap)
 
   override def toString: String =
-    if (bits == 0) return "1"
-    if (bits == (1 << basis.vectorsCount) - 1) return "I"
+    if (bits == 0) return "s"
+//    if (bits == (1 << basis.vectorsCount) - 1) return "I"
     s"${basisVectors.map(v => basis.basisNames.names(v.number)).mkString("")}"
 
 

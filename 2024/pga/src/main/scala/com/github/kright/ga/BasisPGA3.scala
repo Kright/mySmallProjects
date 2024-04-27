@@ -4,7 +4,7 @@ import com.github.kright.symbolic.SymbolicStr
 
 import scala.math.Numeric.Implicits.infixNumericOps
 
-class BasisPGA3(basisNames: BasisNames) extends Basis(3, 0, 1, basisNames)
+class BasisPGA3(basisNames: BasisNames) extends Basis(BasisSignature(3, 0, 1), basisNames)
 
 object BasisPGA3:
   def point[T](x: T, y: T, z: T, w: T)(using basis: BasisPGA3): MultiVector[T] =
