@@ -1,7 +1,7 @@
 package com.github.kright
 
-import com.github.kright.ga.BasisPGA3.*
-import com.github.kright.ga.{Basis, MultiVector, basis}
+import com.github.kright.ga.PGA3.*
+import com.github.kright.ga.{GA, MultiVector, ga}
 import com.github.kright.symbolic.SymbolicStr
 import com.github.kright.symbolic.SymbolicStr.{*, given}
 
@@ -9,22 +9,7 @@ type M = MultiVector[Double]
 
 @main
 def main(): Unit =
-  Basis.pga3.use {
-    //    val a = MultiVector[SymbolicStr](
-    //      "x" -> SymbolicStr.Symbol("ax"),
-    //      "y" -> SymbolicStr.Symbol("ay"),
-    //      "z" -> SymbolicStr.Symbol("az"),
-    //      "w" -> SymbolicStr.Constant(1.0),
-    //    )
-    //
-    //    val b = MultiVector[SymbolicStr](
-    //      "x" -> SymbolicStr.Symbol("bx"),
-    //      "y" -> SymbolicStr.Symbol("by"),
-    //      "w" -> SymbolicStr.Constant(1.0),
-    //    )
-
-    //    println(a.wedge(b).toMultilineString)
-
+  GA.pga3.use {
     // line
     println(point(1.0, 0.0, 0.0).wedge(point(0.0, 1.0, 0.0)).toMultilineString)
 
@@ -83,21 +68,21 @@ def main(): Unit =
     }
   }
 
-def printMultiplicationTables()(using Basis): Unit = {
+def printMultiplicationTables()(using GA): Unit = {
   val maxLen = 5
 
   println("geometric")
-  println(basis.rules.geometric.toPrettyString(basis.bladesByOrder, maxLen))
+  println(ga.stringRepresentation(ga.rules.geometric, ga.bladesOrderedByGrade, maxLen))
   println("geometricAntiproduct")
-  println(basis.rules.antiGeometric.toPrettyString(basis.bladesByOrder, maxLen))
+  println(ga.stringRepresentation(ga.rules.antiGeometric, ga.bladesOrderedByGrade, maxLen))
 
   println("dot")
-  println(basis.rules.dot.toPrettyString(basis.bladesByOrder, maxLen))
+  println(ga.stringRepresentation(ga.rules.dot, ga.bladesOrderedByGrade, maxLen))
   println("antidot")
-  println(basis.rules.antiDot.toPrettyString(basis.bladesByOrder, maxLen))
+  println(ga.stringRepresentation(ga.rules.antiDot, ga.bladesOrderedByGrade, maxLen))
 
   println("wedge")
-  println(basis.rules.wedge.toPrettyString(basis.bladesByOrder, maxLen))
+  println(ga.stringRepresentation(ga.rules.wedge, ga.bladesOrderedByGrade, maxLen))
   println("antiwedge")
-  println(basis.rules.antiWedge.toPrettyString(basis.bladesByOrder, maxLen))
+  println(ga.stringRepresentation(ga.rules.antiWedge, ga.bladesOrderedByGrade, maxLen))
 }

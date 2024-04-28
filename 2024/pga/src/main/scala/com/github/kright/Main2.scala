@@ -1,7 +1,7 @@
 package com.github.kright
 
 
-import com.github.kright.ga.{Basis, MultiVector}
+import com.github.kright.ga.{GA, MultiVector}
 import com.github.kright.symbolic.SymbolicStr
 import com.github.kright.symbolic.SymbolicStr.given
 
@@ -9,8 +9,8 @@ import scala.math.Numeric.Implicits.infixNumericOps
 
 
 @main
-def translate2d(): Unit = Basis.pga2.use {
-  import com.github.kright.ga.BasisPGA2.*
+def translate2d(): Unit = GA.pga2.use {
+  import com.github.kright.ga.PGA2.*
   println(rotate(SymbolicStr("cos"), SymbolicStr("sin")).toPrettyMultilineString)
   val tr = translateX2(SymbolicStr("dx") * SymbolicStr(0.5), SymbolicStr("dy") * SymbolicStr(0.5))
   println("antireverse =" + tr.antiReverse.toPrettyMultilineString)
@@ -26,14 +26,14 @@ def translate2d(): Unit = Basis.pga2.use {
 }
 
 @main
-def mirror3d(): Unit = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def mirror3d(): Unit = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
   val mirror = plane(1.0, 0.0, 0.0, 0.0)
 
   println(
     s"""
        |mirror = ${plane(1.0, 2.0, 3.0, 0.0)}
-       |shiftedMirror = ${plane(1.0, 2.0, 3.0, math.sqrt(1 + 4 + 9))}
+       |shiftedMirror = ${plane(1.0, 2.0, 3.0, Math.sqrt(1 + 4 + 9))}
        |manually shiftedMirror = ${translate(1.0, 2.0, 3.0).antiSandwich(plane(1.0, 2.0, 3.0, 0.0))}
        |""".stripMargin)
 
@@ -42,24 +42,24 @@ def mirror3d(): Unit = Basis.pga3.use {
 }
 
 @main
-def invalidPlane(): Unit = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def invalidPlane(): Unit = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
 
   val p = point(0.0, 0.0, 0.0) wedge point(1.0, 0.0, 0.0) wedge point(2.0, 0.0, 0.0)
   println(p.toMultilineString)
 }
 
 @main
-def validPlane3d(): Unit = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def validPlane3d(): Unit = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
 
   println((point(0.0, 0.0, 0.0) ∧ point(1.0, 0.0, 0.0) ∧ point(0.0, 1.0, 0.0)).withoutZeros.toMultilineString)
   println((point(0.0, 0.0, 0.0) ∧ point(1.0, 0.0, 0.0) ∧ point(0.0, 2.0, 0.0)).withoutZeros.toMultilineString)
 }
 
 @main
-def translate3d() = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def translate3d() = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
 
   val translateXYZ = translateX2(SymbolicStr("dx") * SymbolicStr(0.5), SymbolicStr("dy") * SymbolicStr(0.5), SymbolicStr("dz") * SymbolicStr(0.5))
 
@@ -93,8 +93,8 @@ def translate3d() = Basis.pga3.use {
 
 
 @main
-def line2d() = Basis.pga2.use {
-  import com.github.kright.ga.BasisPGA2.*
+def line2d() = GA.pga2.use {
+  import com.github.kright.ga.PGA2.*
 
   val a = point(2.0, 0.0)
   val b = point(0.0, 2.0)
@@ -107,8 +107,8 @@ def line2d() = Basis.pga2.use {
 
 
 @main
-def line3d() = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def line3d() = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
 
   {
     val a = point(1.0, 0.0, 0.0)
@@ -129,8 +129,8 @@ def line3d() = Basis.pga3.use {
 }
 
 @main
-def plane2d() = Basis.pga2.use {
-  import com.github.kright.ga.BasisPGA2.*
+def plane2d() = GA.pga2.use {
+  import com.github.kright.ga.PGA2.*
 
   val a = point(SymbolicStr("ax"), SymbolicStr("ay"))
   val b = point(SymbolicStr("bx"), SymbolicStr("by"))
@@ -149,8 +149,8 @@ def plane2d() = Basis.pga2.use {
 
 
 @main
-def rotate3d() = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def rotate3d() = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
 
   val a = planeSymbolic("a")
   val b = planeSymbolic("b")
@@ -176,8 +176,8 @@ def rotate3d() = Basis.pga3.use {
 }
 
 @main
-def motor3d(): Unit = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def motor3d(): Unit = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
 
   {
     val a = planeSymbolic("a")
@@ -214,8 +214,8 @@ def motor3d(): Unit = Basis.pga3.use {
 }
 
 @main
-def motor3dv2(): Unit = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def motor3dv2(): Unit = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
   //    val q = rotorSymbolic("sin", 0.0, 0.0, "cos")
 
   val q = MultiVector(
@@ -249,10 +249,10 @@ def motor3dv2(): Unit = Basis.pga3.use {
 
 
 @main
-def ideal(): Unit = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def ideal(): Unit = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
   {
-    val v = MultiVector("x" -> "x", "y" -> "y", "z" -> "z").mapValues(SymbolicStr(_))
+    val v = MultiVector("x" -> SymbolicStr("x"), "y" -> SymbolicStr("y"), "z" -> SymbolicStr("z"))
     val pPlus = ((MultiVector("" -> SymbolicStr(1.0)) + v) * SymbolicStr(0.5)).simplified
     val pMinus = ((MultiVector("" -> SymbolicStr(1.0)) - v) * SymbolicStr(0.5)).simplified
 
@@ -308,8 +308,8 @@ def ideal(): Unit = Basis.pga3.use {
 }
 
 @main
-def inertia3d(): Unit = Basis.pga3.use {
-  import com.github.kright.ga.BasisPGA3.*
+def inertia3d(): Unit = GA.pga3.use {
+  import com.github.kright.ga.PGA3.*
 
   val p = point(SymbolicStr("x"), SymbolicStr("y"), SymbolicStr("z"))
   val m = MultiVector("" -> SymbolicStr("m"))
