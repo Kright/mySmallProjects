@@ -24,14 +24,13 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
     (bits & other.bits) != 0
 
   def isContraction(other: BasisBlade): Boolean =
-    val or = bits | other.bits
-    or == bits || or == other.bits
+    isLeftContraction(other) || isRightContraction(other)
 
   def isLeftContraction(other: BasisBlade): Boolean =
     (bits | other.bits) == other.bits
 
   def isRightContraction(other: BasisBlade): Boolean =
-    (bits | other.bits) == bits  
+    other.isLeftContraction(this)
 
   /* doesnt account sign */
   def anyComplement: BasisBlade =
@@ -39,7 +38,6 @@ case class BasisBlade(bits: Int)(using basis: Basis) extends HasBasis(basis):
 
   override def toString: String =
     if (bits == 0) return "s"
-//    if (bits == (1 << basis.vectorsCount) - 1) return "I"
     s"${basisVectors.map(v => basis.basisNames.names(v.number)).mkString("")}"
 
 
