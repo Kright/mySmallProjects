@@ -70,6 +70,8 @@ class App:
                     if len(self.elements) > 0:
                         self.elements.pop(-1)
 
+                imgui.text("Text field")
+
             imgui.same_line()
 
             with imgui.begin_child("Right panel", width=w // 2, border=True):
