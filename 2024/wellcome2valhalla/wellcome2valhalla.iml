@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="openjdk.jmh.core" level="project" />
-    <orderEntry type="library" name="openjdk.jmh.generator.annprocess" level="project" />
+    <orderEntry type="library" name="openjdk.jmh.core" level="application" />
+    <orderEntry type="library" name="openjdk.jmh.generator.annprocess" level="application" />
   </component>
 </module>
