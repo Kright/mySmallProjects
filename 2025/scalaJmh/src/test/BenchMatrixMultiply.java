@@ -41,7 +41,7 @@ public class BenchMatrixMultiply {
     public Matrix4x4 multiplyFmaFullyUnrolled() {
         return matrixA.multiplyFmaFullyUnrolled(matrixB);
     }
-    
+
     @Benchmark
     public Matrix4x4 multiplyCustomLoop() {
         return matrixA.multiplyCustomLoop(matrixB);
@@ -51,9 +51,14 @@ public class BenchMatrixMultiply {
     public Matrix4x4 multiplyFmaCustomLoop() {
         return matrixA.multiplyFmaCustomLoop(matrixB);
     }
-    
+
    @Benchmark
     public Matrix4x4 multiplyFmaFastRange() {
         return matrixA.multiplyFmaFastRange(matrixB);
+    }
+
+    @Benchmark
+    public Matrix4x4 multiplyCfor() {
+        return matrixA.multiplyCfor(matrixB);
     }
 }
