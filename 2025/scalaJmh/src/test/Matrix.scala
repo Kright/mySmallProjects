@@ -49,6 +49,22 @@ class Matrix4x4:
     result
   }
 
+  def multiplyCforFma(m: Matrix4x4): Matrix4x4 = {
+    val result = new Matrix4x4()
+
+    FastRange.cfor(0, _ < h, _ + 1) { y =>
+      FastRange.cfor(0, _ < w, _ + 1) { x =>
+        var sum = 0.0
+        FastRange.cfor(0, _ < w, _ + 1) { k =>
+          sum = Math.fma(this (y, k), m(k, x), sum)
+        }
+        result(y, x) = sum
+      }
+    }
+
+    result
+  }
+
   def multiplyCustomLoop(m: Matrix4x4): Matrix4x4 = {
     val result = new Matrix4x4()
 
