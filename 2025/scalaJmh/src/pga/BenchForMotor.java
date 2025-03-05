@@ -48,4 +48,14 @@ public class BenchForMotor {
     public Pga3dMotorRecord multiplyMotorRecord3x() {
         return motorAr.geometric(motorBr).geometric(motorCr).geometric(motorDr);
     }
+
+    @Benchmark
+    public Pga3dMotor multiplyMotorWithFma() {
+        return motorA.geometricWithFma(motorB);
+    }
+    
+    @Benchmark
+    public Pga3dMotor multiplyMotorWithFma3x() {
+        return motorA.geometricWithFma(motorB).geometricWithFma(motorC).geometricWithFma(motorD);
+    }
 }

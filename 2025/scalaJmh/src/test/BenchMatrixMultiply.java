@@ -61,4 +61,9 @@ public class BenchMatrixMultiply {
     public Matrix4x4 multiplyCfor() {
         return matrixA.multiplyCfor(matrixB);
     }
+    
+    @Benchmark
+    public Matrix4x4 multiplyCforFma() {
+        return matrixA.multiplyCforFma(matrixB);
+    }
 }
