@@ -1,4 +1,6 @@
-Jmh results:
+# Jmh results:
+
+## Ryzen 3700
 
 openjdk 23
 
@@ -47,7 +49,7 @@ BenchForMotor.multiplyMotorRecord3x             avgt    3  0.028 ? 0.002  us/op
 BenchForMotor.multiplyMotorWithFma3x            avgt    3  0.037 ? 0.004  us/op
 ```
 
-openjdk 21
+openjdk 21.0.6
 
 ```
 Benchmark                                       Mode  Cnt  Score   Error  Units
@@ -61,4 +63,51 @@ BenchMatrixMultiply.multiplyCfor                avgt    3  0.027 ± 0.001  us/op
 BenchMatrixMultiply.multiplyNaiveUnrolled       avgt    3  0.038 ± 0.004  us/op
 BenchMatrixMultiply.multiplyNaive               avgt    3  0.602 ± 0.098  us/op
 
+```
+
+## Ryzen 5950
+
+openjdk 21.0.6
+
+```
+Benchmark                                       Mode  Cnt  Score    Error  Units
+BenchMatrixMultiply.multiplyCforFma             avgt    3  0.018 ±  0.005  us/op
+BenchMatrixMultiply.multiplyFmaCustomLoop       avgt    3  0.019 ±  0.001  us/op
+BenchMatrixMultiply.multiplyCfor                avgt    3  0.020 ±  0.001  us/op
+BenchMatrixMultiply.multiplyFmaFastRange        avgt    3  0.020 ±  0.004  us/op
+BenchMatrixMultiply.multiplyFmaFullyUnrolled    avgt    3  0.020 ±  0.001  us/op
+BenchMatrixMultiply.multiplyNaiveFullyUnrolled  avgt    3  0.020 ±  0.002  us/op
+BenchMatrixMultiply.multiplyCustomLoop          avgt    3  0.021 ±  0.001  us/op
+BenchMatrixMultiply.multiplyNaiveUnrolled       avgt    3  0.028 ±  0.001  us/op
+BenchMatrixMultiply.multiplyNaive               avgt    3  0.449 ±  0.036  us/op
+```
+
+openjdk 23.0.1
+
+```
+Benchmark                                       Mode  Cnt  Score    Error  Units
+BenchMatrixMultiply.multiplyFmaCustomLoop       avgt    3  0.018 ?  0.003  us/op
+BenchMatrixMultiply.multiplyCforFma             avgt    3  0.019 ?  0.001  us/op
+BenchMatrixMultiply.multiplyFmaFullyUnrolled    avgt    3  0.019 ?  0.003  us/op
+BenchMatrixMultiply.multiplyNaiveFullyUnrolled  avgt    3  0.019 ?  0.001  us/op
+BenchMatrixMultiply.multiplyFmaFastRange        avgt    3  0.020 ?  0.001  us/op
+BenchMatrixMultiply.multiplyCustomLoop          avgt    3  0.021 ?  0.007  us/op
+BenchMatrixMultiply.multiplyCfor                avgt    3  0.021 ?  0.001  us/op
+BenchMatrixMultiply.multiplyNaiveUnrolled       avgt    3  0.030 ?  0.005  us/op
+BenchMatrixMultiply.multiplyNaive               avgt    3  0.459 ?  0.015  us/op
+```
+
+openjdk 24
+
+```
+Benchmark                                       Mode  Cnt  Score    Error  Units
+BenchMatrixMultiply.multiplyCforFma             avgt    3  0.018 ±  0.001  us/op
+BenchMatrixMultiply.multiplyFmaCustomLoop       avgt    3  0.018 ±  0.001  us/op
+BenchMatrixMultiply.multiplyFmaFastRange        avgt    3  0.019 ±  0.001  us/op
+BenchMatrixMultiply.multiplyFmaFullyUnrolled    avgt    3  0.019 ±  0.001  us/op
+BenchMatrixMultiply.multiplyNaiveFullyUnrolled  avgt    3  0.019 ±  0.001  us/op
+BenchMatrixMultiply.multiplyCfor                avgt    3  0.020 ±  0.001  us/op
+BenchMatrixMultiply.multiplyCustomLoop          avgt    3  0.020 ±  0.002  us/op
+BenchMatrixMultiply.multiplyNaiveUnrolled       avgt    3  0.028 ±  0.003  us/op
+BenchMatrixMultiply.multiplyNaive               avgt    3  0.458 ±  0.011  us/op
 ```
