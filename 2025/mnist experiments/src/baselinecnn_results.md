@@ -1,0 +1,11 @@
+* channels = 64, loss = 0.0257, accuracy = 0.9919, params count = 897546
+* channels = 128, loss = 0.0282, accuracy = 0.9913, params count = 3580938
+* channels = 96, loss = 0.0312, accuracy = 0.9911, params count = 2016010
+* channels = 48, loss = 0.0268, accuracy = 0.9905, params count = 505738
+* channels = 24, loss = 0.0303, accuracy = 0.9900, params count = 127306
+* channels = 16, loss = 0.0342, accuracy = 0.9894, params count = 56970
+* channels = 32, loss = 0.0351, accuracy = 0.9887, params count = 225546
+* channels = 12, loss = 0.0412, accuracy = 0.9863, params count = 32266
+* channels = 8, loss = 0.0562, accuracy = 0.9825, params count = 14538
+* channels = 6, loss = 0.0717, accuracy = 0.9766, params count = 8290
+* channels = 4, loss = 0.0957, accuracy = 0.9703, params count = 3786
