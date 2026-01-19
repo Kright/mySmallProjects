@@ -1,0 +1,1 @@
+gcc -shared -fPIC -o libcode.so code.c -O3
