@@ -51,4 +51,18 @@ class Matrix4x4Benchmark {
     nativeMultiplier.multiplyWithNewArea(matrixA, matrixB, result)
     bh.consume(result)
   }
+
+  @Benchmark
+  def getZeroNative(bh: Blackhole): Unit = {
+    val value: Double = nativeMultiplier.getZeroHandle.invoke()
+    bh.consume(value)
+  }
+
+  @Benchmark
+  def getZero(bh: Blackhole): Unit = {
+    val value: Double = getZeroDouble()
+    bh.consume(value)
+  }
 }
+
+private def getZeroDouble(): Double = 0.0

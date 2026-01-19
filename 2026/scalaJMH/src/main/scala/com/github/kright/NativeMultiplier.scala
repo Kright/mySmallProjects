@@ -1,6 +1,6 @@
 package com.github.kright
 
-import java.lang.foreign.MemorySegment.ofArray
+import java.lang.foreign.MemorySegment
 import java.lang.foreign.{Arena, FunctionDescriptor, Linker, SymbolLookup, ValueLayout}
 import java.lang.invoke.MethodHandle
 
@@ -26,11 +26,16 @@ class NativeMultiplier {
     )
   )
 
+  val getZeroHandle: MethodHandle = linker.downcallHandle(
+    lookup.find("getDoubleZero").get(),
+    FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE)
+  )
+
   def multiply(a: Matrix4x4, b: Matrix4x4, result: Matrix4x4): Unit = {
-    aSegment.copyFrom(ofArray(a.data))
-    bSegment.copyFrom(ofArray(b.data))
+    aSegment.copyFrom(MemorySegment.ofArray(a.data))
+    bSegment.copyFrom(MemorySegment.ofArray(b.data))
     matrixMultiplyHandle.invoke(aSegment, bSegment, resultSegment)
-    ofArray(result.data).copyFrom(resultSegment)
+    MemorySegment.ofArray(result.data).copyFrom(resultSegment)
   }
 
   def multiplyWithNewArea(a: Matrix4x4, b: Matrix4x4, result: Matrix4x4): Unit = {
@@ -40,14 +45,18 @@ class NativeMultiplier {
       val aSegment = arena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
       val bSegment = arena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
       val resultSegment = arena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
-      aSegment.copyFrom(ofArray(a.data))
-      bSegment.copyFrom(ofArray(b.data))
+      aSegment.copyFrom(MemorySegment.ofArray(a.data))
+      bSegment.copyFrom(MemorySegment.ofArray(b.data))
       // Call native function
       matrixMultiplyHandle.invoke(aSegment, bSegment, resultSegment)
-      ofArray(result.data).copyFrom(resultSegment)
+      MemorySegment.ofArray(result.data).copyFrom(resultSegment)
     }
     finally {
       newArena.close()
     }
+  }
+
+  def callGetZero(): Double = {
+    getZeroHandle.invoke()
   }
 }
