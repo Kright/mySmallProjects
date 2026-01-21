@@ -23,12 +23,13 @@ Amazon.com Inc. Java 25.0.1
 
 ```
 [info] Benchmark                                      Mode  Cnt    Score     Error  Units
-[info] Matrix4x4Benchmark.getZero                     avgt    5    0.208 ±   0.043  ns/op
-[info] Matrix4x4Benchmark.getZeroNative               avgt    5    6.585 ±   0.367  ns/op
-[info] Matrix4x4Benchmark.multiply                    avgt    5  359.286 ±  22.784  ns/op
-[info] Matrix4x4Benchmark.multiplyFastLoop            avgt    5   16.727 ±   0.513  ns/op
-[info] Matrix4x4Benchmark.multiplyNative              avgt    5   20.693 ±   1.053  ns/op
-[info] Matrix4x4Benchmark.multiplyNativeWithNewArena  avgt    5  267.742 ± 138.956  ns/op
+[info] Matrix4x4Benchmark.downcallWithUpCall          avgt    5   24.003 ±   0.710  ns/op
+[info] Matrix4x4Benchmark.getZero                     avgt    5    0.203 ±   0.004  ns/op
+[info] Matrix4x4Benchmark.getZeroNative               avgt    5    6.562 ±   0.185  ns/op
+[info] Matrix4x4Benchmark.multiply                    avgt    5  350.941 ±  17.191  ns/op
+[info] Matrix4x4Benchmark.multiplyFastLoop            avgt    5   16.652 ±   0.376  ns/op
+[info] Matrix4x4Benchmark.multiplyNative              avgt    5   24.836 ±   1.642  ns/op
+[info] Matrix4x4Benchmark.multiplyNativeWithNewArena  avgt    5  278.400 ± 141.558  ns/op
 ```
 
 In short:

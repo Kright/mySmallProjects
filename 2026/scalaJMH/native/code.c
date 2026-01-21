@@ -19,3 +19,7 @@ void matrix4x4_multiply(const double * restrict a, const double * restrict b, do
 double getDoubleZero() {
     return 0.0;
 }
+
+double callFunction(double (*callback)()) {
+    return callback();
+}

@@ -31,6 +31,27 @@ class NativeMultiplier {
     FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE)
   )
 
+  val downcallWithUpCallHandle: MethodHandle = linker.downcallHandle(
+    lookup.find("callFunction").get(),
+    FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS),
+  )
+
+  private def jvmGetZero(): Double = 0.0
+
+  val jvmGetZeroStub: MemorySegment = linker.upcallStub(
+    java.lang.invoke.MethodHandles.lookup().findVirtual(
+      classOf[NativeMultiplier],
+      "jvmGetZero",
+      java.lang.invoke.MethodType.methodType(classOf[Double])
+    ).bindTo(this),
+    FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE),
+    arena
+  )
+
+  def downcallWithUpCall(): Double = {
+    downcallWithUpCallHandle.invoke(jvmGetZeroStub).asInstanceOf[Double]
+  }
+
   def multiply(a: Matrix4x4, b: Matrix4x4, result: Matrix4x4): Unit = {
     aSegment.copyFrom(MemorySegment.ofArray(a.data))
     bSegment.copyFrom(MemorySegment.ofArray(b.data))

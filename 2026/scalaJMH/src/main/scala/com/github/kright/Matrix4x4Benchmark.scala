@@ -63,6 +63,11 @@ class Matrix4x4Benchmark {
     val value: Double = getZeroDouble()
     bh.consume(value)
   }
+  
+  @Benchmark()
+  def downcallWithUpCall(bh: Blackhole): Unit = {
+    bh.consume(nativeMultiplier.downcallWithUpCall())
+  }
 }
 
 private def getZeroDouble(): Double = 0.0
