@@ -41,6 +41,12 @@ class Matrix4x4Benchmark {
   }
 
   @Benchmark
+  def multiplyFastRange(bh: Blackhole): Unit = {
+    com.github.kright.multiplyFastRange(matrixA, matrixB, result)
+    bh.consume(result)
+  }
+
+  @Benchmark
   def multiplyNative(bh: Blackhole): Unit = {
     nativeMultiplier.multiply(matrixA, matrixB, result)
     bh.consume(result)

@@ -57,6 +57,21 @@ def multiply(a: Matrix4x4, b: Matrix4x4, result: Matrix4x4): Unit = {
 }
 
 
+def multiplyFastRange(a: Matrix4x4, b: Matrix4x4, result: Matrix4x4): Unit = {
+  import FastRange.*
+
+  for (row <- 0 to 3) {
+    for (column <- 0 to 3) {
+      var sum = 0.0
+      for (i <- 0 to 3) {
+        sum += a(row, i) * b(i, column)
+      }
+      result(row, column) = sum
+    }
+  }
+}
+
+
 def multiplyFastLoop(a: Matrix4x4, b: Matrix4x4, result: Matrix4x4): Unit = {
   fastLoop(4) { row =>
     fastLoop(4) { column =>
