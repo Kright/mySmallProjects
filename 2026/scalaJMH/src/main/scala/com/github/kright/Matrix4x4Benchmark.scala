@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit
 @State(Scope.Thread)
 @BenchmarkMode(Array(Mode.AverageTime))
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Fork(1)
+@Warmup(iterations = 10, time = 2, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 10, time = 2, timeUnit = TimeUnit.SECONDS)
+@Fork(4)
 class Matrix4x4Benchmark {
 
   var matrixA: Matrix4x4 = _
@@ -43,6 +43,12 @@ class Matrix4x4Benchmark {
   @Benchmark
   def multiplyFastRange(bh: Blackhole): Unit = {
     com.github.kright.multiplyFastRange(matrixA, matrixB, result)
+    bh.consume(result)
+  }
+
+  @Benchmark
+  def multiplyOpaqueRange(bh: Blackhole): Unit = {
+    com.github.kright.multiplyOpaqueRange(matrixA, matrixB, result)
     bh.consume(result)
   }
 

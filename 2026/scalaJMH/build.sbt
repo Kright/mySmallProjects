@@ -10,4 +10,5 @@ lazy val root = (project in file("."))
       "-optimize",
       "-Xmax-inlines", "64"
     ),
+    libraryDependencies += "com.github.sbt" % "junit-interface" % "0.13.3" % Test
   )
