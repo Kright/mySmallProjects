@@ -63,9 +63,9 @@ class NativeMultiplier {
     val newArena = Arena.ofConfined()
 
     try {
-      val aSegment = arena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
-      val bSegment = arena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
-      val resultSegment = arena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
+      val aSegment = newArena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
+      val bSegment = newArena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
+      val resultSegment = newArena.allocate(ValueLayout.JAVA_DOUBLE, 16L)
       aSegment.copyFrom(MemorySegment.ofArray(a.data))
       bSegment.copyFrom(MemorySegment.ofArray(b.data))
       // Call native function
